@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  hex:
+    container_name: "hex"
+    image: hex:latest
+    build:
+      dockerfile: dockerfile
+    command: bash -c "python3 -m http.server"
+    ports:
+      - "8000:8000"
