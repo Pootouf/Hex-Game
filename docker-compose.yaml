@@ -5,7 +5,9 @@ services:
     container_name: "hex"
     image: hex:latest
     build:
-      dockerfile: dockerfile
-    command: bash -c "python3 -m http.server"
+      dockerfile: Dockerfile
+    command: bash -c "python3 -m http.server -d ./public/"
+    volumes:
+      - .:/app
     ports:
       - "8000:8000"
