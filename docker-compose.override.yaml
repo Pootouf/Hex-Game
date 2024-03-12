@@ -5,9 +5,12 @@ services:
     volumes:
       - node:/app/node_modules
       - ./app:/app
+    command: bash -c "(flask --app main run --port 5000 --host=0.0.0.0 &)
+        && npx tailwindcss -i ./assets/css/app.css -o ./static/output.css --watch"
     environment:
       FLASK_DEBUG: true
       FLASK_ENV: development
+    tty: true
 
 
 volumes:

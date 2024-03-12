@@ -2,7 +2,7 @@ FROM node:21.7.0-slim
 
 # Python installation
 RUN apt update -y \
-    && apt install python3 python3-pip -y
+    && apt install python3 python3-pip python3-flask -y
 
 # Define workdir
 WORKDIR /app
@@ -11,12 +11,10 @@ WORKDIR /app
 RUN npm install -g npm
 
 # Get npm config
-COPY ./package.json /app
+COPY ./package.json ./package-lock.json /app/
 
-RUN npm install
-
-# Flask installation
-RUN apt install python3-flask -y
+# Tailwind installation
+RUN npm install && npm install tailwindcss@3.4.1
 
 # Copy project files
 COPY . /app
