@@ -1,0 +1,18 @@
+http:
+  routers:
+    hex-router:
+      rule: "PathPrefix(`/`)"
+      service: hex-service
+      tls: {}
+
+  services:
+    hex-service:
+      loadBalancer:
+        servers:
+          - url: "http://hex:5000/"
+
+
+tls:
+  certificates:
+    - certFile: /etc/traefik/server.cert
+      keyFile: /etc/traefik/server.key

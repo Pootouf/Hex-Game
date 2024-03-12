@@ -21,4 +21,4 @@ RUN apt install python3-flask -y
 # Copy project files
 COPY . /app
 
-EXPOSE 8000
+EXPOSE 5000
