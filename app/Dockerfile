@@ -2,7 +2,7 @@ FROM node:21.7.0-slim
 
 # Python installation
 RUN apt update -y \
-    && apt install python3 python3-pip python3-flask python3-gi -y
+    && apt install python3 python3-pip python3-flask -y
 
 # Define workdir
 WORKDIR /app

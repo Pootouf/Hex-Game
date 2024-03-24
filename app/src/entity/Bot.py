@@ -1,18 +1,13 @@
-from gi.overrides.Gdk import Color
-
 from src.entity import Board
+from src.entity.Player import Player
 
 
-class Bot(object):
+class Bot(Player):
     nextMove : {int, int}
-    color : Color
 
-    def __init__(self, color, nextMove):
-        self.color = color
-        self.nextMove = nextMove
+    def __init__(self, color):
+        super().__init__(color)
 
-    def getColor(self) -> Color :
-        return self.color
 
     def getNextMove(self) -> {int, int}:
         return self.nextMove

@@ -1,13 +1,11 @@
-from gi.overrides.Gdk import Color
-
 
 class Player(object):
-    color:Color
+    color:str
 
-    def __init__(self, color:Color):
+    def __init__(self, color:str):
         self.color = color
 
-    def getColor(self) -> Color:
+    def getColor(self) -> str:
         return self.color
 
     
