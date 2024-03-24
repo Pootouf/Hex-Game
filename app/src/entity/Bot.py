@@ -1,6 +1,6 @@
 from gi.overrides.Gdk import Color
 
-from app.src.entity import Board
+from src.entity import Board
 
 
 class Bot(object):

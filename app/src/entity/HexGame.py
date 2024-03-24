@@ -1,4 +1,4 @@
-from app.src.entity import Player, Board
+from src.entity import Player, Board
 
 
 class HexGame(object):

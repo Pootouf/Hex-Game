@@ -1,4 +1,4 @@
-from app.src.entity import Board, Status
+from src.entity import Board, Status
 
 
 class Cell(object):

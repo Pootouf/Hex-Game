@@ -1,7 +1,7 @@
 from gi.overrides.Gdk import Color
 
 
-class Player():
+class Player(object):
     color:Color
 
     def __init__(self, color:Color):
