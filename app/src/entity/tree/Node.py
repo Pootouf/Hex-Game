@@ -5,14 +5,12 @@ from typing_extensions import Self
 
 
 class Node(object):
-
     value: int
 
     type: NodeType
 
     def __init__(self):
         self.children = []
-
 
     def getNodeNumber(self) -> int:
         return len(self.children)

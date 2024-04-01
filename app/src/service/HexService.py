@@ -1,3 +1,6 @@
+import math
+from random import random
+
 from src.entity.Board import Board
 from src.entity.Bot import Bot
 from src.entity.Cell import Cell
@@ -6,6 +9,7 @@ from src.entity.Player import Player
 from src.entity.Status import Status
 from src.entity.tree.HeuristicTree import HeuristicTree
 from src.entity.tree.Node import Node
+from src.entity.tree.NodeType import NodeType
 
 
 def createGame(boardSize: int, difficultyLevel: int) -> HexGame:
@@ -31,9 +35,16 @@ def createHeuristicTree(board: Board, height: int) -> HeuristicTree:
     __addChildNodes(node, board, height, Status.BOT)
     return heuristicTree
 
+
+def applyMinimax(tree: HeuristicTree):
+    root = tree.getRoot()
+    __minimax(root, tree)
+
+
 def __addChildNodes(root: Node, board: Board, height: int, activePlayer: Status):
     if height == 0:
         root.setValue(__calculateHeuristicValueForBoard(board))
+        return
     for i in range(board.getSideLength()):
         for j in range(board.getSideLength()):
             if board.getCell(i, j).getStatus() != Status.NONE:
@@ -47,9 +58,12 @@ def __addChildNodes(root: Node, board: Board, height: int, activePlayer: Status)
 
 def __getActivePlayer(currentActivePlayer: Status) -> Status:
     match currentActivePlayer:
-        case Status.NONE: return Status.NONE
-        case Status.PLAYER: return Status.BOT
-        case Status.BOT: return Status.PLAYER
+        case Status.NONE:
+            return Status.NONE
+        case Status.PLAYER:
+            return Status.BOT
+        case Status.BOT:
+            return Status.PLAYER
 
 
 def __getNewBoardWithSelectedAction(currentBoard: Board, x: int, y: int, activePlayer: Status) -> Board:
@@ -82,10 +96,22 @@ def __calculateHeuristicValueForBoard(board: Board) -> int:
     return botValue - playerValue
 
 
-
-
-
 def __getCurrentBranchValue(branch: dict, index: int) -> int:
     leftValue = branch[index] if index in branch else 0
     rightValue = branch[index + 1] if index + 1 in branch else 0
     return max(leftValue, rightValue)
+
+
+def __minimax(root: Node, tree: HeuristicTree) -> float:
+    bf: int = len(root.getChildren())
+    if root.isLeaf():
+        return root.getValue()
+    if root.getType() == NodeType.MAX:
+        val = - math.inf
+        for k in range(bf):
+            val = max(val, __minimax(root.getChild(k), tree))
+    else:
+        val = math.inf
+        for k in range(bf):
+            val = min(val, __minimax(root.getChild(k), tree))
+    return val

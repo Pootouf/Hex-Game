@@ -13,6 +13,5 @@ class Board(object):
     def getCells(self) -> list[list[Cell]]:
         return self.cells
 
-
     def getSideLength(self) -> int:
         return len(self.cells)
