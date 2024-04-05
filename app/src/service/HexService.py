@@ -41,6 +41,11 @@ def applyMinimax(tree: HeuristicTree):
     __minimax(root, tree)
 
 
+def applyNegamax(tree: HeuristicTree):
+    root = tree.getRoot()
+    __negamax(root, tree)
+
+
 def __addChildNodes(root: Node, board: Board, height: int, activePlayer: Status):
     if height == 0:
         root.setValue(__calculateHeuristicValueForBoard(board))
@@ -114,4 +119,14 @@ def __minimax(root: Node, tree: HeuristicTree) -> float:
         val = math.inf
         for k in range(bf):
             val = min(val, __minimax(root.getChild(k), tree))
+    return val
+
+
+def __negamax(root: Node, tree: HeuristicTree) -> float:
+    bf: int = len(root.getChildren())
+    if root.isLeaf():
+        return root.getValue()
+    val = - math.inf
+    for k in range(bf):
+        val = max(val, - __negamax(root.getChild(k), tree))
     return val
