@@ -46,6 +46,11 @@ def applyNegamax(tree: HeuristicTree):
     __negamax(root, tree)
 
 
+def applyAlphaBeta(tree: HeuristicTree):
+    root = tree.getRoot()
+    __alphabeta(root, tree, -math.inf, math.inf)
+
+
 def __addChildNodes(root: Node, board: Board, height: int, activePlayer: Status):
     if height == 0:
         root.setValue(__calculateHeuristicValueForBoard(board))
@@ -130,3 +135,22 @@ def __negamax(root: Node, tree: HeuristicTree) -> float:
     for k in range(bf):
         val = max(val, - __negamax(root.getChild(k), tree))
     return val
+
+
+def __alphabeta(root: Node, tree: HeuristicTree, alpha: float, beta: float) -> float:
+    bf: int = len(root.getChildren())
+    if root.isLeaf():
+        return root.getValue()
+    else:
+        if root.getType() == NodeType.MAX:
+            k: int = 0
+            while alpha < beta and k < bf:
+                alpha = max(alpha, __alphabeta(root.getChild(k), tree, alpha, beta))
+                k += 1
+            return alpha
+        else:
+            k: int = 0
+            while alpha < beta and k < bf:
+                beta = min(beta, __alphabeta(root.getChild(k), tree, alpha, beta))
+                k += 1
+            return beta

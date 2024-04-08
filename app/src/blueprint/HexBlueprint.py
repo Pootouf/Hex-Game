@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 
-from src.service.HexService import createGame, createHeuristicTree, applyMinimax, applyNegamax
+from src.service.HexService import createGame, createHeuristicTree, applyMinimax, applyNegamax, applyAlphaBeta
 
 hex_route = Blueprint('hex_route', __name__, template_folder='templates')
 
@@ -18,4 +18,7 @@ def selectGameParametersGame():
     game = createGame(16, 1)
     heuristictree = createHeuristicTree(game.board, 16)
     applyNegamax(heuristictree)
+    game = createGame(4, 1)
+    heuristictree = createHeuristicTree(game.board, 4)
+    applyAlphaBeta(heuristictree)
     return render_template('game/gamePage.html.jinja', game=game, heuristictree=heuristictree)
