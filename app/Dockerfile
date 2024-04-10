@@ -20,6 +20,9 @@ COPY ./package.json ./package-lock.json /app/
 # Tailwind installation
 RUN npm install && npm install tailwindcss@3.4.1
 
+# Stimulus installation
+RUN npm install stimulus
+
 # Copy project files
 COPY . /app
 

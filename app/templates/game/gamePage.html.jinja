@@ -1,7 +1,47 @@
 {% extends 'index.html.jinja' %}
 
 {% block content %}
-    <div class="h-full w-full bg-black">
-        <span class="">Hello</span>
+    <div class="bg-black flex-col align-middle text-center items-center justify-center h-full">
+        <h2 class="text-3xl text-white font-bold">
+            Choose your game parameters and launch the game
+        </h2>
+        <form class="text-white flex-col align-middle text-center items-center"
+              action="{{ url_for('hex_route.selectGameParameters') }}"
+              method="get">
+            <label for="board-size">
+                Please choose a board size to begin the game :
+            </label>
+            <select class="text-black" name="board-size" id="board-size">
+                <option value="3">3 x 3</option>
+                <option value="5">5 x 5</option>
+                <option value="7">7 x 7</option>
+                <option value="9">9 x 9</option>
+                <option value="11">11 x 11</option>
+            </select>
+            <br>
+            <br>
+            <label for="difficulty">Select your level difficulty : </label>
+            <select class="text-black" name="difficulty" id="difficulty">
+                <option value="1">1 : Easy</option>
+                <option value="2">2 : Medium</option>
+                <option value="3">3 : Hard</option>
+            </select>
+            <br>
+            <br>
+            <label for="heuristic">Select your heuristic :</label>
+            <select class="text-black" name="heuristic" id="heuristic">
+                <option value="1">Basic heuristic</option>
+                <option value="2">Two distance</option>
+            </select>
+            <br>
+            <br>
+            <label>
+                <button class="bg-purple-950 rounded-xl p-3"
+                       type="submit"
+                >
+                    Confirm and create game
+                </button>
+            </label>
+        </form>
     </div>
 {% endblock %}
