@@ -6,7 +6,7 @@
       <link rel="stylesheet" href="{{ url_for('static', filename='output.css') }}">
       <title>Hex-Game</title>
   </head>
-  <body class="flex flex-col overflow-hidden bg-cover bg-fixed">
+  <body class="h-screen w-screen flex flex-col overflow-hidden bg-cover bg-fixed">
     {% block navigation %}
         {% include 'utils/nav.html.jinja' %}
     {% endblock %}
