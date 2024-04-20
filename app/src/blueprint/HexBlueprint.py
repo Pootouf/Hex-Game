@@ -39,3 +39,8 @@ def playOnce(cell : Cell):
     game = jsonpickle.decode(session['game'])
     heuristictree = createHeuristicTree(game.board, game.difficultyLevel)
     return render_template('game/gameBoard.html.jinja', game=game)
+
+
+@hex_route.route('/hex/documentation/history')
+def displayHexHistory():
+    return render_template('documentation/displayHistory.html.jinja')

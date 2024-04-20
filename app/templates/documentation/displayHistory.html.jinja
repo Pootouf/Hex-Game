@@ -1,0 +1,144 @@
+{% extends 'index.html.jinja' %}
+
+{#
+    Display history of Hex game
+    param:
+    return : display the history of Hex game
+#}
+
+{% block content %}
+<div class="w-full h-full overflow-auto">
+    <h1 class="justify-center align-middle text-center text-5xl text-white font-bold">Hex Game</h1>
+
+    <div>
+        <h2 class="text-2xl text-amber-200 mt-[2%] ml-[10%]">Summary</h2>
+        <ul class="list-disc text-amber-100 ml-[15%] mt-[2%]">
+            <li>History</li>
+            <li>Rules</li>
+        </ul>
+    </div>
+
+    <div class="mx-[10%] my-[5%] p-2 text-amber-50 bg-opacity-25 bg-black rounded-lg">
+        <h2 class="flex justify-center align-middle text-center text-2xl text-amber-200 mb-[2%]">History</h2>
+
+        <p>
+            Hex (also called Nash) is a two player abstract strategy board game in which players attempt to connect
+            opposite sides of a rhombus-shaped board made of hexagonal cells.
+            Hex was invented by mathematician and poet Piet Hein in 1942 and later rediscovered and popularized by John Nash.
+            <br>
+            <br>
+            It is traditionally played on an 11×11 rhombus board, although 13×13 and 19×19 boards are also popular.
+            The board is composed of hexagons called cells or hexes. Each player is assigned a pair of opposite sides
+            of the board, which they must try to connect by alternately placing a stone of their color onto any empty hex. Once placed, the stones are never moved or removed. A player wins when they successfully connect their sides together through a chain of adjacent stones. Draws are impossible in Hex due to the topology of the game board.
+            <br>
+            <br>
+            Despite the simplicity of its rules, the game has deep strategy and sharp tactics.
+            It also has profound mathematical underpinnings related to the Brouwer fixed-point theorem, matroids and
+            graph connectivity. The game was first published under the name Polygon in the Danish newspaper Politiken
+            on December 26, 1942. It was later marketed as a board game in Denmark under the name Con-tac-tix, and
+            Parker Brothers marketed a version of it in 1952 called Hex; they are no longer in production.
+            Hex can also be played with paper and pencil on hexagonally ruled graph paper.
+        </p>
+
+        <h3 class="text-lg text-amber-200 my-[2%]">Invention</h3>
+        <p>
+            The game was invented by the Danish mathematician Piet Hein, who introduced it in 1942 at the Niels Bohr
+            Institute.
+            Although Hein later renamed it to Con-tac-tix,[3][4] it became known in Denmark under the name Polygon
+            due to an article by Hein in the 26 December 1942 edition of the Danish newspaper Politiken,
+            the first published description of the game, in which he used that name.
+        </p>
+
+        <h3 class="text-lg text-amber-200 my-[2%]">Nash's claim</h3>
+        <p>
+            The game was rediscovered in 1948 or 1949 by the mathematician John Nash at Princeton University.
+            According to Martin Gardner, who featured Hex in his July 1957 Mathematical Games column, Nash's fellow
+            players called the game either Nash or John, with the latter name referring to the fact that the game could
+            be played on hexagonal bathroom tiles. Nash insisted that he discovered the game independently of Hein,
+            but there is some doubt about this, as it is known that there were Danish people, including Aage Bohr,
+            who played Hex at Princeton in the 1940s, so that Nash may have subconsciously picked up the idea.
+            Hein wrote to Gardner in 1957 expressing doubt that Nash discovered Hex independently.
+            Gardner was unable to independently verify or refute Nash's claim.
+            Gardner privately wrote to Hein: "I discussed it with the editor, and we decided that the charitable thing
+            to do was to give Nash the benefit of the doubt. ...
+            The fact that you invented the game before anyone else is undisputed.
+            Any number of people can come along later and say that they thought of the same thing at some later date,
+            but this means little and nobody really cares.
+            In a later letter to Hein, Gardner added: "Just between you and me, and off the record, I think you hit
+            the nail on the head when you referred to a 'flash of a suggestion' which came to Mr. Nash from a Danish
+            source, and which he later forgot about.
+            It seems the most likely explanation.
+        </p>
+
+        <h3 class="text-lg text-amber-200 my-[2%]">Published games</h3>
+        <p>
+            Initially in 1942, Hein distributed the game, which was then called Polygon, in the form of 50-sheet
+            game pads. Each sheet contained an empty 11×11 empty board that could be played on with pencils or pens.
+            In 1952, Parker Brothers marketed a version of the game under the name "Hex", and the name stuck.<br>
+            Parker Brothers also sold a version under the "Con-tac-tix" name in 1968.<br>
+            Hex was also issued as one of the games in the 1974 3M Paper Games Series; the game contained a
+            5+1⁄2-by-8+1⁄2-inch (140 mm × 220 mm) 50-sheet pad of ruled Hex grids. <br>
+            Hex is currently published by Nestorgames in a 11×11 size and a 14×14 size.
+        </p>
+
+        <h3 class="text-lg text-amber-200 my-[2%]">Shannon's Hex machine</h3>
+        <p>
+            About 1950, Claude Shannon and E. F. Moore constructed an analog Hex playing machine, which was essentially
+            a resistance network with resistors for edges and light bulbs for vertices.
+            The move to be made corresponded to a certain specified saddle point in the network.
+            The machine played a reasonably good game of Hex. Later, researchers attempting to solve the game and
+            develop Hex-playing computer algorithms emulated Shannon's network to create strong computer players.
+        </p>
+
+        <h3 class="text-lg text-amber-200 my-[2%]">Research timeline</h3>
+
+            It was known to Hein in 1942 that Hex cannot end in a draw; in fact, one of his design criteria for
+            the game was that "exactly one of the two players can connect their two sides".<br>
+            <br>
+            It was also known to Hein that the first player has a theoretical winning strategy.<br>
+            <br>
+            In 1952 John Nash wrote up an existence proof that on symmetrical boards, the first player has a
+            winning strategy.<br>
+            <br>
+            In 1964, the mathematician Alfred Lehman showed that Hex cannot be represented as a binary matroid,
+            so a determinate winning strategy like that for the Shannon switching game on a regular rectangular
+            grid was unavailable.<br>
+            <br>
+            In 1981, the Stefan Reisch showed that Hex is PSPACE-complete.<br>
+            <br>
+            In 2002, the first explicit winning strategy (a reduction-type strategy) on a 7×7 board was described.<br>
+            <br>
+            In the 2000s, by using brute force search computer algorithms, Hex boards up to size 9×9 (as of 2016)
+            have been completely solved.<br>
+            <br>
+            Starting about 2006, the field of computer Hex came to be dominated by Monte Carlo tree search methods
+            borrowed from successful computer implementations of Go. These replaced earlier implementations that
+            combined Shannon's Hex-playing heuristic with alpha-beta search. On the subject of early Computer Hex,
+            notable early implementations include Dolphin Microware's Hexmaster, published in the early 1980s for
+            Atari 8-bit computers.<br>
+            <br>
+            Until 2019, humans remained better than computers at least on big boards such as 19x19,
+            but on Oct 30, 2019 the program Mootwo won against the human player with the best Elo rank on LittleGolem,
+            also winner of various tournaments (the game is available here).
+            This program was based on Polygames (an open-source project, initially developed by Facebook Artificial
+            Intelligence Research and several universities) using a mix of:
+            <ul class="list-disc text-amber-100 ml-[15%] mt-[2%]">
+                <li>zero-learning as in AlphaZero</li>
+                <li>
+                    boardsize invariance thanks to fully convolutional neural networks (as in U-Net) and pooling
+                    and growing architectures (the program can learn on a small board,
+                    and then extrapolate on a big board, as opposed to justified popular claims about
+                    earlier artificial intelligence methods such as the original AlphaGo).
+                </li>
+            </ul>
+
+
+    </div>
+    <div>
+        <h2 class="text-2xl text-amber-200 mt-[2%] ml-[10%]">Bibliography</h2>
+        <ul class="list-disc text-amber-100 ml-[15%] mt-[2%]">
+            <li class="underline"><a href="https://en.wikipedia.org/wiki/Hex_(board_game)">Wikipedia</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
