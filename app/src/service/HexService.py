@@ -1,4 +1,6 @@
 import math
+from queue import Queue
+from enum import Enum
 from random import random
 
 from src.entity.Board import Board
@@ -154,3 +156,13 @@ def __alphabeta(root: Node, tree: HeuristicTree, alpha: float, beta: float) -> f
                 beta = min(beta, __alphabeta(root.getChild(k), tree, alpha, beta))
                 k += 1
             return beta
+
+# def __sss(root: Node, tree: HeuristicTree) -> float:
+#     k: int
+#     G: Queue[(Node, NodeState, int)]
+#     G.put((root,NodeState.V, float('inf') )
+
+
+class NodeState(Enum):
+    V=0,
+    R=1
