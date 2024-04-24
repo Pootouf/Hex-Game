@@ -9,6 +9,8 @@ class Node(object):
 
     type: NodeType
 
+    parent: Self
+
     def __init__(self):
         self.children = []
 
@@ -29,6 +31,7 @@ class Node(object):
 
     def addChild(self, child: Self):
         self.children.append(child)
+        child.parent = self
 
     def setType(self, nodeType: NodeType):
         self.type = nodeType
@@ -38,3 +41,9 @@ class Node(object):
 
     def getValue(self) -> int:
         return self.value
+
+    def setParent(self, parent: Self):
+        self.parent = parent
+
+    def getParent(self) -> Self:
+        return self.parent
