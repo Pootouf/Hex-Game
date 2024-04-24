@@ -157,32 +157,33 @@ def __alphabeta(root: Node, tree: HeuristicTree, alpha: float, beta: float) -> f
                 k += 1
             return beta
 
+
 def __sss(root: Node, tree: HeuristicTree) -> float:
     k: int
     G = Queue[(Node, NodeState, int)]()
-    G.put((root,NodeState.V, float('inf')))
+    G.put((root, NodeState.V, float('inf')))
     while G.queue[0][1] is not NodeState.R and G.queue[0][0] is not root:
         tup = G.queue.popleft()
         if tup[1] == NodeState.V:
-            if tup[0].isLeaf() :
+            if tup[0].isLeaf():
                 G.put((tup[0], NodeState.R, min(tup[2], tup[0].value)))
-            else :
-                if tup[0].nodeType == NodeType.MAX :
-                    for i in range(1, len(tup[0].getChildren())) :
+            else:
+                if tup[0].nodeType == NodeType.MAX:
+                    for i in range(1, len(tup[0].getChildren())):
                         G.put((tup[0].getChild(i), NodeState.V, tup[2]))
-                else :
+                else:
                     G.put((__getLeftmostUndiscoveredSucc(tup[0]), NodeState.V, tup[2]))
-        else :
-            if tup[0].nodeType == NodeType.MIN :
+        else:
+            if tup[0].nodeType == NodeType.MIN:
                 G.put((tup[0].getParent(), NodeState.R, tup[2]))
-                for t in G.queue :
-                    if t[0].getParent() is tup[0].getParent() :
+                for t in G.queue:
+                    if t[0].getParent() is tup[0].getParent():
                         G.get(t)
-            else :
+            else:
                 sibling = __getUndiscoveredRightSibling(tup[0])
-                if sibling is not None :
+                if sibling is not None:
                     G.put((sibling, NodeState.V, tup[2]))
-                else :
+                else:
                     G.put((tup[0].getParent(), NodeState.R, tup[2]))
     resolvedTup = G.queue.popleft()
     return resolvedTup[2]
@@ -193,28 +194,34 @@ def __sss(root: Node, tree: HeuristicTree) -> float:
     :param node, the node where to find the leftmost node: 
     :return the node at the leftmost of the tree with inf value: 
 """
+
+
 def __getLeftmostUndiscoveredSucc(node: Node) -> Node | None:
     for currentNode in node.getChildren():
         if currentNode.getValue() is float('inf'):
             return currentNode
+    return None
 
- """
-    getUndiscoveredRightSibling : return the node at the right of the given node with inf value
-    :param node, the node from which we want to find the sibling: 
-    :return the first right sibling undiscovered node: 
+
 """
-def __getUndiscoveredRightSibling(node: Node) -> Node | None :
+   getUndiscoveredRightSibling : return the node at the right of the given node with inf value
+   :param node, the node from which we want to find the sibling: 
+   :return the first right sibling undiscovered node: 
+"""
+
+
+def __getUndiscoveredRightSibling(node: Node) -> Node | None:
     parent = node.getParent()
     isAtRightOfNode = False
-    for currentNode in parent.getChildren() :
-        if currentNode is node :
+    for currentNode in parent.getChildren():
+        if currentNode is node:
             isAtRightOfNode = True
             continue
-        else :
+        else:
             if currentNode.getValue() is float('inf') and isAtRightOfNode:
                 return currentNode
 
 
 class NodeState(Enum):
-    V=0,
-    R=1
+    V = 0,
+    R = 1
