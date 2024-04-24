@@ -53,6 +53,11 @@ def applyAlphaBeta(tree: HeuristicTree):
     __alphabeta(root, tree, -math.inf, math.inf)
 
 
+def applySSS(tree: HeuristicTree):
+    root = tree.getRoot()
+    __sss(root, tree)
+
+
 def __addChildNodes(root: Node, board: Board, height: int, activePlayer: Status):
     if height == 0:
         root.setValue(__calculateHeuristicValueForBoard(board))

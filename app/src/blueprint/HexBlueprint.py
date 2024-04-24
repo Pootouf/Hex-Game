@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, session, request
 import jsonpickle
 
 from src.entity.Cell import Cell
-from src.service.HexService import createGame, createHeuristicTree, applyMinimax, applyNegamax, applyAlphaBeta
+from src.service.HexService import createGame, createHeuristicTree, applyMinimax, applyNegamax, applyAlphaBeta, applySSS
 
 hex_route = Blueprint('hex_route', __name__, template_folder='templates')
 
@@ -22,6 +22,9 @@ def createExample():
     game = createGame(4, 1)
     heuristictree = createHeuristicTree(game.board, 4)
     applyAlphaBeta(heuristictree)
+    game = createGame(4, 1)
+    heuristictree = createHeuristicTree(game.board, 4)
+    applySSS(heuristictree)
     return render_template('game/gamePage.html.jinja', game=game, heuristictree=heuristictree)
 
 @hex_route.route('/hex/game/create/game/parameters')
