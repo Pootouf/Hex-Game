@@ -53,6 +53,11 @@ def applyAlphaBeta(tree: HeuristicTree):
     __alphabeta(root, tree, -math.inf, math.inf)
 
 
+def applyNegAlphaBeta(tree: HeuristicTree):
+    root = tree.getRoot()
+    __negAlphaBeta(root, tree, -math.inf, math.inf)
+
+
 def applySSS(tree: HeuristicTree):
     root = tree.getRoot()
     __sss(root, tree)
@@ -119,6 +124,14 @@ def __getCurrentBranchValue(branch: dict, index: int) -> int:
     return max(leftValue, rightValue)
 
 
+"""
+    minimax: return the minimax value of the tree's root
+    :param root the root of the tree
+    :param tree the tree on which the algorithm is applied
+    :return: the heuristic value of the tree's root
+"""
+
+
 def __minimax(root: Node, tree: HeuristicTree) -> float:
     bf: int = len(root.getChildren())
     if root.isLeaf():
@@ -134,6 +147,14 @@ def __minimax(root: Node, tree: HeuristicTree) -> float:
     return val
 
 
+"""
+    negamax: return the negamax value of the tree's root
+    :param root the root of the tree
+    :param tree the tree on which the algorithm is applied
+    :return: the heuristic value of the tree's root
+"""
+
+
 def __negamax(root: Node, tree: HeuristicTree) -> float:
     bf: int = len(root.getChildren())
     if root.isLeaf():
@@ -141,6 +162,27 @@ def __negamax(root: Node, tree: HeuristicTree) -> float:
     val = - math.inf
     for k in range(bf):
         val = max(val, - __negamax(root.getChild(k), tree))
+    return val
+
+
+"""
+    negAlphaBeta: return the negamax value of the tree's root by applying NegAlphaBeta algorithm
+    :param root the root of the tree
+    :param tree the tree on which the algorithm is applied
+    :return: the heuristic value of the tree's root
+"""
+
+
+def __negAlphaBeta(root: Node, tree: HeuristicTree, alpha: float, beta: float) -> float:
+    if root.isLeaf():
+        return root.getValue()
+    bf: int = len(root.getChildren())
+    k: int = 0
+    val: float = - math.inf
+    while alpha < beta and k < bf:
+        val = max(val, - __negAlphaBeta(root.getChild(k), tree, -beta, -alpha))
+        alpha = max(alpha, val)
+        k += 1
     return val
 
 
