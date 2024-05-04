@@ -11,11 +11,16 @@ class Node(object):
 
     parent: Self
 
+    savedMoves: list
+
     def __init__(self):
         self.children = []
 
     def getNodeNumber(self) -> int:
         return len(self.children)
+
+    def getSavedMoves(self) -> list:
+        return self.savedMoves
 
     def isLeaf(self) -> bool:
         return len(self.children) == 0
@@ -26,8 +31,14 @@ class Node(object):
     def getChildren(self) -> List[Self]:
         return self.children
 
+    def getParent(self) -> Self:
+        return self.parent
+
     def getChild(self, index: int) -> Self:
         return self.children[index]
+
+    def getValue(self) -> int:
+        return self.value
 
     def addChild(self, child: Self):
         self.children.append(child)
@@ -39,11 +50,8 @@ class Node(object):
     def setValue(self, nodeValue: int):
         self.value = nodeValue
 
-    def getValue(self) -> int:
-        return self.value
-
     def setParent(self, parent: Self):
         self.parent = parent
 
-    def getParent(self) -> Self:
-        return self.parent
+    def setSavedMoves(self, savedMoves: list):
+        self.savedMoves = savedMoves

@@ -23,4 +23,5 @@ class Cell(object):
     def setStatus(self, status: Status):
         self.status = status
 
-
+    def copy(self):
+        return Cell(self.x, self.y, self.status)

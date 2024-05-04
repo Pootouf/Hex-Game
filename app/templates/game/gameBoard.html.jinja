@@ -43,10 +43,11 @@
                 ">
         {% for line in game.board.cells %}
             {% for cell in line %}
-                <div class="ml-[{{ (cell.x * shift)|round(1) }}vw] {{ cell.status|int }} cursor-pointer hex
-                    {% if cell.status|int == NONE_STATUS %}
+                <div class="ml-[{{ (cell.x * shift)|round(1) }}vw] {{ cell.status.value }} cursor-pointer hex
+                    {% if cell.status.value == NONE_STATUS %}
                             bg-gray-900 border-b-gray-900 border-t-gray-900
-                    {% elif cell.status|int == PLAYER_STATUS %}
+                    {% elif cell.status.value == PLAYER_STATUS %}
+                            blabla
                         {{ playerColor }}
                     {% else %}
                         {{ botColor }}
@@ -57,9 +58,10 @@
                      viewbox="0 0 300 300" width="100%" height="100%" >
                     <polygon points="150,309 300,225 300,76 150,-11 0,75 0,225" class="fill-[rgba(0,_0,_0,_0)]"
                         data-action="click->hex#playOnce"
-                        data-item-url-param="{{
+                        data-hex-url-param="{{
                             url_for('hex_route.playOnce',
-                                    cell = cell
+                                    x = cell.x,
+                                    y = cell.y
                             )
                         }}"
                     >

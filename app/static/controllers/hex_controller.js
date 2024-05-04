@@ -2,8 +2,9 @@ import { Controller } from "https://unpkg.com/@hotwired/stimulus/dist/stimulus.j
 
 export default class extends Controller {
     async playOnce(box) {
-        alert("test")
+        console.log(box.params)
         let url = box.params.url;
-        await fetch(url)
+        let response = await fetch(url)
+        document.getElementsByTagName("html")[0].innerHTML = await response.text()
     }
 }
