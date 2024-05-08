@@ -43,11 +43,10 @@
                 ">
         {% for line in game.board.cells %}
             {% for cell in line %}
-                <div class="ml-[{{ (cell.x * shift)|round(1) }}vw] {{ cell.status.value }} cursor-pointer hex
+                <div class="ml-[{{ (cell.x * shift)|round(1) }}vw] cursor-pointer hex
                     {% if cell.status.value == NONE_STATUS %}
                             bg-gray-900 border-b-gray-900 border-t-gray-900
                     {% elif cell.status.value == PLAYER_STATUS %}
-                            blabla
                         {{ playerColor }}
                     {% else %}
                         {{ botColor }}
@@ -82,4 +81,8 @@
 </div>
 <hr class="h-1 w-[20vw] my-8 border-0 {{ botBackground }} ">
 </div>
+
+    {% if winner != NONE_STATUS %}
+        {% include 'game/endGameScreenResult.html.jinja' %}
+    {% endif %}
 {% endblock %}
