@@ -1,8 +1,5 @@
 import math
-from heapq import heappop, heappush
 from queue import Queue
-from enum import Enum
-from random import random
 
 from src.entity.Board import Board
 from src.entity.Bot import Bot
@@ -15,6 +12,7 @@ from src.entity.tree.Node import Node
 from src.entity.tree.NodeType import NodeType
 from src.entity.HeuristicSelection import *
 from src.entity.AlgorithmSelection import *
+from src.service.TwoDistance import calculateHeuristicValueWithTwoDistance
 
 
 def createGame(boardSize: int, difficultyLevel: int, heuristicChoice: int, algorithmChoice: int) -> HexGame:
@@ -95,7 +93,7 @@ def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, ac
             case HeuristicSelection.BASIC:
                 root.setValue(__calculateHeuristicValueForBoard(newBoard))
             case HeuristicSelection.TWO_DISTANCE:
-                root.setValue(__calculateHeuristicValueWithTwoDistance(newBoard, activePlayer))
+                root.setValue(calculateHeuristicValueWithTwoDistance(newBoard))
 
         return
 
@@ -156,65 +154,6 @@ def __calculateHeuristicValueForBoard(board: Board) -> int:
         previousBranch = currentBranch
 
     return botValue - playerValue
-
-
-def __calculateHeuristicValueWithTwoDistance(board: Board, player: Status) -> int:
-    sideLength = board.getSideLength()
-    if player == Status.PLAYER:
-        searchq = [(0, sideLength, i, sideLength, (i, sideLength)) for i in range(-1, sideLength)]
-    else:
-        searchq = [(0, sideLength, sideLength, i, (sideLength, i)) for i in range(-1, sideLength)]
-    best_neighbor = [[None] * board.getSideLength() for _ in range(board.getSideLength())]
-    best_opposite = None
-    searched = set()
-    dist = -1
-    connected = False
-    while searchq:
-        dist, weight, row, col, neighbor = heappop(searchq)
-
-        if weight == 0:
-            if best_opposite is None:
-                best_opposite = neighbor
-            elif best_opposite != neighbor:
-                connected = True
-                break
-
-        for dy, dx in [(-1, 0), (0, -1), (1, -1), (1, 0), (0, 1), (-1, 1)]:
-            next_row = row + dy
-            next_col = col + dx
-
-            # efficiency optimization. faster than checking if the cell is out of bounds
-            try:
-                if next_row < 0 or next_col < 0:
-                    continue
-                else:
-                    board_val = board.getCells()[next_row][next_col].getStatus()
-            except IndexError:
-                continue
-
-            if board_val == Status.BOT and (next_row, next_col) not in searched:
-                if best_neighbor[next_row][next_col] is None:
-                    best_neighbor[next_row][next_col] = neighbor
-                elif best_neighbor[next_row][next_col] != neighbor:
-                    searched.add((next_row, next_col))
-                    heappush(searchq, (dist + 1, next_col if player == Status.PLAYER else next_row, next_row, next_col, (next_row, next_col)))
-
-            elif board_val == Status.PLAYER and (next_row, next_col) not in searched:
-                if best_neighbor[next_row][next_col] is None:
-                    best_neighbor[next_row][next_col] = neighbor
-                    heappush(searchq, (dist, next_col if player == Status.PLAYER else next_row, next_row, next_col, neighbor))
-                elif best_neighbor[next_row][next_col] != neighbor:
-                    searched.add((next_row, next_col))
-                    best_neighbor[next_row][next_col] = neighbor
-                    heappush(searchq, (dist, next_col if player == Status.PLAYER else next_row, next_row, next_col, neighbor))
-
-
-    # once the search is finished, build the list of the shortest path
-    if connected:
-        return dist
-    # if there is no way to reach the other side, treat it as infinite distance
-    else:
-        return int("max")
 
 
 def __getCurrentBranchValue(branch: dict, index: int) -> int:
