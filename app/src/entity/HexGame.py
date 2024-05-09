@@ -2,6 +2,8 @@ from src.entity import Player, Board
 from src.entity.Bot import Bot
 from src.entity.HeuristicSelection import HeuristicSelection
 from src.entity.AlgorithmSelection import AlgorithmSelection
+from src.entity.Status import Status
+
 
 class HexGame(object):
     isGameFinished:bool
@@ -11,6 +13,7 @@ class HexGame(object):
     player:Player
     board:Board
     bot:Bot
+    winner:Status = Status.NONE
 
     def __init__(self, difficultyLevel:int, player:Player, board:Board, bot: Bot,
                  selectedHeuristic: HeuristicSelection, selectedAlgorithm: AlgorithmSelection):
@@ -21,6 +24,7 @@ class HexGame(object):
         self.bot = bot
         self.selectedHeuristic = selectedHeuristic
         self.selectedAlgorithm = selectedAlgorithm
+        self.winner = Status.NONE
 
     def isGameFinished(self) -> bool:
         return self.isGameFinished
@@ -42,3 +46,12 @@ class HexGame(object):
 
     def getSelectedAlgorithm(self) -> AlgorithmSelection:
         return self.selectedAlgorithm
+
+    def getWinner(self) -> Status:
+        return self.winner
+
+    def setIsGameFinished(self, finished: bool):
+        self.isGameFinished = finished
+
+    def setWinner(self, winner: Status):
+        self.winner = winner
