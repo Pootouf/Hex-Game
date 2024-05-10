@@ -375,29 +375,37 @@ def __sss(root: Node) -> float:
     k: int = 0
     G = Queue[(Node, NodeState, int)]()
     G.put((root, NodeState.V, math.inf))
-    while G.queue[0][1] is not NodeState.R and G.queue[0][0] is not root:
+    while G.queue[0][1] is not NodeState.R or G.queue[0][0] is not root:
         tup = G.queue.popleft()
         if tup[1] == NodeState.V:
             if tup[0].isLeaf():
                 G.put((tup[0], NodeState.R, min(tup[2], tup[0].value)))
                 tup[0].setValue(min(tup[2], tup[0].value))
             else:
-                if tup[0].nodeType == NodeType.MAX:
+                if tup[0].getType() == NodeType.MAX:
                     for i in range(1, len(tup[0].getChildren())):
                         G.put((tup[0].getChild(i), NodeState.V, tup[2]))
+                        tup[0].getChild(i).setValue(tup[2])
                 else:
-                    G.put((__getLeftmostUndiscoveredSucc(tup[0]), NodeState.V, tup[2]))
+                    node = __getLeftmostUndiscoveredSucc(tup[0])
+                    G.put((node, NodeState.V, tup[2]))
+                    if node is not None:
+                        node.setValue(tup[2])
+
         else:
-            if tup[0].nodeType == NodeType.MIN:
+            if tup[0].getType() == NodeType.MIN:
                 G.put((tup[0].getParent(), NodeState.R, tup[2]))
                 tup[0].setValue(tup[2])
+                H = Queue[(Node, NodeState, int)]()
                 for t in G.queue:
-                    if t[0].getParent() is tup[0].getParent():
-                        G.get(t)
+                    if t[0].getParent() is not tup[0].getParent():
+                        H.put(t)
+                G = H
             else:
                 sibling = __getUndiscoveredRightSibling(tup[0])
                 if sibling is not None:
                     G.put((sibling, NodeState.V, tup[2]))
+                    sibling.setValue(tup[2])
                 else:
                     G.put((tup[0].getParent(), NodeState.R, tup[2]))
                     tup[0].setValue(tup[2])
@@ -415,7 +423,7 @@ def __sss(root: Node) -> float:
 
 def __getLeftmostUndiscoveredSucc(node: Node) -> Node | None:
     for currentNode in node.getChildren():
-        if currentNode.getValue() is float('inf'):
+        if not hasattr(node, "value"):
             return currentNode
     return None
 
@@ -435,7 +443,7 @@ def __getUndiscoveredRightSibling(node: Node) -> Node | None:
             isAtRightOfNode = True
             continue
         else:
-            if currentNode.getValue() is float('inf') and isAtRightOfNode:
+            if not hasattr(node, "value") and isAtRightOfNode:
                 return currentNode
 
 

@@ -15,6 +15,7 @@ class Node(object):
 
     def __init__(self):
         self.children = []
+        self.parent = None
 
     def getNodeNumber(self) -> int:
         return len(self.children)
