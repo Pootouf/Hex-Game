@@ -121,6 +121,8 @@ def applyNegAlphaBeta(tree: HeuristicTree):
 
 
 def playOneMove(cell: Cell, game: HexGame):
+    if cell.getStatus() != Status.NONE or game.winner != Status.NONE:
+        return
     cell.setStatus(Status.PLAYER)
     winner = getWinner(game)
     if winner is not Status.NONE:
@@ -140,10 +142,15 @@ def playOneMove(cell: Cell, game: HexGame):
 
     maxNode = None
     for child in heuristictree.root.getChildren():
-        if maxNode is None or (hasattr(maxNode, "value") and maxNode.getValue() < child.getValue()):
-            maxNode = child
+        if game.selectedAlgorithm == AlgorithmSelection.ALPHABETA or game.selectedAlgorithm == AlgorithmSelection.NEGAMAX:
+            if maxNode is None or (hasattr(maxNode, "value") and -maxNode.getValue() < -child.getValue()):
+                maxNode = child
+        else:
+            if maxNode is None or (hasattr(maxNode, "value") and maxNode.getValue() < child.getValue()):
+                maxNode = child
 
     game.board.getCell(maxNode.getSavedMoves()[0][0], maxNode.getSavedMoves()[0][1]).setStatus(Status.BOT)
+    getWinner(game)
 
 
 """
@@ -193,16 +200,7 @@ def getWinner(game: HexGame) -> Status:
 
 def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, activePlayer: Status):
     if height == 0:
-        newBoard = __copyBoard(game.board)
-        for (x, y, status) in savedMoves:
-            newBoard.getCell(x, y).setStatus(status)
-
-        match game.selectedHeuristic:
-            case HeuristicSelection.BASIC:
-                root.setValue(calculateHeuristicValueForBoard(newBoard))
-            case HeuristicSelection.TWO_DISTANCE:
-                root.setValue(calculateHeuristicValueWithTwoDistance(newBoard))
-
+        __createLeafNode(root, game, savedMoves)
         return
 
     board = game.board
@@ -221,6 +219,20 @@ def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, ac
             newMoves.append((i, j, activePlayer))
             node.setSavedMoves(newMoves)
             __addChildNodes(node, game, newMoves, height - 1, __getActivePlayer(activePlayer))
+            if node.isLeaf():
+                __createLeafNode(node, game, newMoves)
+
+
+def __createLeafNode(node: Node, game: HexGame, savedMoves: list):
+    newBoard = __copyBoard(game.board)
+    for (x, y, status) in savedMoves:
+        newBoard.getCell(x, y).setStatus(status)
+
+    match game.selectedHeuristic:
+        case HeuristicSelection.BASIC:
+            node.setValue(calculateHeuristicValueForBoard(newBoard))
+        case HeuristicSelection.TWO_DISTANCE:
+            node.setValue(calculateHeuristicValueWithTwoDistance(newBoard))
 
 
 """
@@ -516,7 +528,7 @@ def __negamaxHeuristic(root: Node):
         return
     else:
         for child in root.getChildren():
-            return __negamaxHeuristic(child)
+            __negamaxHeuristic(child)
 
 
 class NodeState(Enum):
