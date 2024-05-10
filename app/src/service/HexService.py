@@ -12,6 +12,7 @@ from src.entity.tree.Node import Node
 from src.entity.tree.NodeType import NodeType
 from src.entity.HeuristicSelection import *
 from src.entity.AlgorithmSelection import *
+from src.service.BasicHeuristic import calculateHeuristicValueForBoard
 from src.service.TwoDistance import calculateHeuristicValueWithTwoDistance
 
 """
@@ -110,7 +111,7 @@ def playOneMove(cell: Cell, game: HexGame):
 
     maxNode = None
     for child in heuristictree.root.getChildren():
-        if maxNode is None or maxNode.getValue() < child.getValue():
+        if maxNode is None or (hasattr(maxNode, "value") and maxNode.getValue() < child.getValue()):
             maxNode = child
 
     game.board.getCell(maxNode.getSavedMoves()[0][0], maxNode.getSavedMoves()[0][1]).setStatus(Status.BOT)
@@ -139,7 +140,6 @@ def getWinner(game: HexGame) -> Status:
     hasGameEndedByPlayer = __hasGameEnded(game, startColumn, endColumn, Status.PLAYER)
 
     if hasGameEndedByPlayer:
-        print("Game ended by player")
         game.setWinner(Status.PLAYER)
 
     # Evaluate if the game is ended by the bot
@@ -149,14 +149,12 @@ def getWinner(game: HexGame) -> Status:
     hasGameEndedByBot = __hasGameEnded(game, startLine, endLine, Status.BOT)
 
     if hasGameEndedByBot:
-        print("Game ended by bot")
         game.setWinner(Status.BOT)
 
     if hasGameEndedByPlayer or hasGameEndedByBot:
         game.setIsGameFinished(True)
         return game.getWinner()
 
-    print("no win")
 
     return Status.NONE
 
@@ -171,7 +169,7 @@ def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, ac
 
         match game.selectedHeuristic:
             case HeuristicSelection.BASIC:
-                root.setValue(__calculateHeuristicValueForBoard(newBoard))
+                root.setValue(calculateHeuristicValueForBoard(newBoard))
             case HeuristicSelection.TWO_DISTANCE:
                 root.setValue(calculateHeuristicValueWithTwoDistance(newBoard))
 
@@ -220,34 +218,6 @@ def __copyBoard(currentBoard: Board) -> Board:
     return Board(newTab)
 
 
-def __calculateHeuristicValueForBoard(board: Board) -> int:
-    cells = board.getCells()
-
-    botValue = 0
-    playerValue = 0
-    previousBranch = {}
-    for i in range(board.getSideLength()):
-        currentBranch = {}
-        for j in range(board.getSideLength()):
-            cellBot = cells[i][j]
-            cellPlayer = cells[j][i]
-            if cellBot.getStatus() == Status.BOT:
-                currentValue = __getCurrentBranchValue(previousBranch, j)
-                currentBranch[j] = currentValue + 1
-                botValue = max(botValue, currentBranch[j])
-            elif cellPlayer.getStatus() == Status.PLAYER:
-                currentValue = __getCurrentBranchValue(previousBranch, i)
-                currentBranch[i] = currentValue + 1
-                playerValue = max(playerValue, currentBranch[i])
-        previousBranch = currentBranch
-
-    return botValue - playerValue
-
-
-def __getCurrentBranchValue(branch: dict, index: int) -> int:
-    leftValue = branch[index] if index in branch else 0
-    rightValue = branch[index + 1] if index + 1 in branch else 0
-    return max(leftValue, rightValue)
 
 
 """
@@ -355,6 +325,7 @@ def __sss(root: Node) -> float:
         if tup[1] == NodeState.V:
             if tup[0].isLeaf():
                 G.put((tup[0], NodeState.R, min(tup[2], tup[0].value)))
+                tup[0].setValue(min(tup[2], tup[0].value))
             else:
                 if tup[0].nodeType == NodeType.MAX:
                     for i in range(1, len(tup[0].getChildren())):
@@ -438,10 +409,6 @@ def __hasGameEnded(game: HexGame, cellsToTreat: list, goalCells: list, player: S
     treatedCells = list()
     while cellsToTreat:
         cell = cellsToTreat.pop()
-        print("to treat")
-        print(cell.getX())
-        print(cell.getY())
-        print(player)
         if cell in goalCells :
             return True
         neighbours = cell.getNeighbours()
@@ -449,10 +416,6 @@ def __hasGameEnded(game: HexGame, cellsToTreat: list, goalCells: list, player: S
             if (neighbour.getStatus() == player and not(neighbour in treatedCells)
                     and not(neighbour in cellsToTreat)):
                 cellsToTreat.append(neighbour)
-                print("neighbour")
-                print(neighbour.getX())
-                print(neighbour.getY())
-                print(player)
         treatedCells.append(cell)
     return False
 

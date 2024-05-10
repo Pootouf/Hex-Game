@@ -3,25 +3,26 @@ from heapq import heappop, heappush
 
 from src.entity.Board import Board
 from src.entity.Status import Status
-from src.service.HexService import __calculateHeuristicValueForBoard
+from src.service.BasicHeuristic import calculateHeuristicValueForBoard
 
 
 def calculateHeuristicValueWithTwoDistance(board: Board) -> int:
     # find the player that's closer to winning
     p1_dist = __twoDistanceValueForPlayer(board, Status.PLAYER)
     p2_dist = __twoDistanceValueForPlayer(board, Status.BOT)
-    val = p2_dist - p1_dist
+    val = p1_dist - p2_dist
     # if a player does not have a 2-distance path, pick a high finite number, so we dont confuse it with a
     # definite win or a definite loss
     if math.isinf(val):
         val = int(math.copysign(100, val))
+        val += calculateHeuristicValueForBoard(board)
     if math.isnan(val):
         # if neither player has a path to their opposite side, we get nan
         # in this rare case, revert to normal heuristic
-        val = __calculateHeuristicValueForBoard(board)
+        val = calculateHeuristicValueForBoard(board)
     return val
 
-def __twoDistanceValueForPlayer(board: Board, player: Status) -> int:
+def __twoDistanceValueForPlayer(board: Board, player: Status) -> float:
     sideLength = board.getSideLength()
     if player == Status.PLAYER:
         searchq = [(0, sideLength, i, sideLength, (i, sideLength)) for i in range(-1, sideLength)]
@@ -77,4 +78,4 @@ def __twoDistanceValueForPlayer(board: Board, player: Status) -> int:
         return dist
     # if there is no way to reach the other side, treat it as infinite distance
     else:
-        return int("max")
+        return math.inf
