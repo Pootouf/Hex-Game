@@ -23,6 +23,8 @@ from src.service.TwoDistance import calculateHeuristicValueWithTwoDistance
     :param algorithmChoice, the chosen algorithm to use:
     :return the created Hex game:
 """
+
+
 def createGame(boardSize: int, difficultyLevel: int, heuristicChoice: int, algorithmChoice: int) -> HexGame:
     cells = []
     for i in range(boardSize):
@@ -32,7 +34,6 @@ def createGame(boardSize: int, difficultyLevel: int, heuristicChoice: int, algor
             cellList.append(cell)
         cells.append(cellList)
     board = Board(cells)
-
 
     player = Player("blue")
     bot = Bot("red")
@@ -44,70 +45,95 @@ def createGame(boardSize: int, difficultyLevel: int, heuristicChoice: int, algor
     __initializeCellsNeighbour(game)
     return game
 
+
 """
     createHeuristicTree: create the heuristic tree for the game with given depth
     :param game, the current hex game:
     :param height, the height of the wanted tree:
     :return the heuristic tree:
 """
+
+
 def createHeuristicTree(game: HexGame, height: int) -> HeuristicTree:
     node = Node()
-    node.setType(Status.PLAYER)
+    node.setType(NodeType.MAX)
     __addChildNodes(node, game, list(), height, Status.BOT)
 
     heuristicTree = HeuristicTree(node)
     return heuristicTree
+
 
 """
     applyMinimax: apply Minimax algorithm to the tree
     :param tree the tree on which the algorithm is applied:
     :return: the heuristic value of the tree's root:
 """
+
+
 def applyMinimax(tree: HeuristicTree):
     root = tree.getRoot()
     __minimax(root)
+
 
 """
     applyNegamax: apply Negamax algorithm to the tree
     :param tree the tree on which the algorithm is applied:
     :return: the heuristic value of the tree's root:
 """
+
+
 def applyNegamax(tree: HeuristicTree):
     root = tree.getRoot()
+    __negamaxHeuristic(root)
     __negamax(root)
+
 
 """
     applyAlphaBeta: apply AlphaBeta algorithm to the tree
     :param tree the tree on which the algorithm is applied:
     :return: the heuristic value of the tree's root:
 """
+
+
 def applyAlphaBeta(tree: HeuristicTree):
     root = tree.getRoot()
     __alphabeta(root, -math.inf, math.inf)
+
 
 """
     applyNegAlphaBeta: apply NegAlphaBeta algorithm to the tree
     :param tree the tree on which the algorithm is applied:
     :return: the heuristic value of the tree's root:
 """
+
+
 def applyNegAlphaBeta(tree: HeuristicTree):
     root = tree.getRoot()
+    __negamaxHeuristic(root)
     __negAlphaBeta(root, -math.inf, math.inf)
+
 
 """
     playOneMove: play a single move on the Hex Game, for the player like it choose, and one for the bot
     :param cell, the selected cell by the player:
     :param game, the current Hex game:
 """
+
+
 def playOneMove(cell: Cell, game: HexGame):
     cell.setStatus(Status.PLAYER)
     heuristictree = createHeuristicTree(game, game.difficultyLevel)
     match game.selectedAlgorithm:
-        case AlgorithmSelection.MINIMAX: applyMinimax(heuristictree)
-        case AlgorithmSelection.NEGAMAX: applyNegamax(heuristictree)
-        case AlgorithmSelection.ALPHABETA: applyAlphaBeta(heuristictree)
-        case AlgorithmSelection.NEGALPHABETA: applyNegAlphaBeta(heuristictree)
-        case AlgorithmSelection.SSS: applySSS(heuristictree)
+        case AlgorithmSelection.MINIMAX:
+            applyMinimax(heuristictree)
+        case AlgorithmSelection.NEGAMAX:
+            applyNegamax(heuristictree)
+        case AlgorithmSelection.ALPHABETA:
+            applyAlphaBeta(heuristictree)
+        case AlgorithmSelection.NEGALPHABETA:
+            applyNegAlphaBeta(heuristictree)
+        case AlgorithmSelection.SSS:
+            applySSS(heuristictree)
 
     maxNode = None
     for child in heuristictree.root.getChildren():
@@ -122,6 +148,8 @@ def playOneMove(cell: Cell, game: HexGame):
     :param tree the tree on which the algorithm is applied:
     :return: the heuristic value of the tree's root:
 """
+
+
 def applySSS(tree: HeuristicTree):
     root = tree.getRoot()
     __sss(root)
@@ -132,6 +160,8 @@ def applySSS(tree: HeuristicTree):
     :param game, the current game of Hex:
     :return the winner of the game:
 """
+
+
 def getWinner(game: HexGame) -> Status:
     # Evaluate if the game is ended by the player
     startColumn = __getColumnOfMatrix(0, game)
@@ -155,10 +185,7 @@ def getWinner(game: HexGame) -> Status:
         game.setIsGameFinished(True)
         return game.getWinner()
 
-
     return Status.NONE
-
-
 
 
 def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, activePlayer: Status):
@@ -182,18 +209,24 @@ def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, ac
                     or (i, j, Status.BOT) in savedMoves or (i, j, Status.PLAYER) in savedMoves):
                 continue
             node = Node()
-            node.setType(activePlayer)
+            if activePlayer == Status.PLAYER:
+                node.setType(NodeType.MAX)
+            else:
+                node.setType(NodeType.MIN)
             root.addChild(node)
             newMoves = savedMoves.copy()
             newMoves.append((i, j, activePlayer))
             node.setSavedMoves(newMoves)
             __addChildNodes(node, game, newMoves, height - 1, __getActivePlayer(activePlayer))
 
+
 """
     getActivePlayer: return Status of the active player
     :param currentActivePlayer, the current player who played:
     :return the status of the active player:
 """
+
+
 def __getActivePlayer(currentActivePlayer: Status) -> Status:
     match currentActivePlayer:
         case Status.NONE:
@@ -203,11 +236,14 @@ def __getActivePlayer(currentActivePlayer: Status) -> Status:
         case Status.BOT:
             return Status.PLAYER
 
+
 """
     copyBoard: make a deep copy of the board
     :param currentBoard, the board actually used:
     :return the board copied:
 """
+
+
 def __copyBoard(currentBoard: Board) -> Board:
     newTab = []
     for row in currentBoard.getCells():
@@ -216,8 +252,6 @@ def __copyBoard(currentBoard: Board) -> Board:
             newRow.append(cell.copy())
         newTab.append(newRow)
     return Board(newTab)
-
-
 
 
 """
@@ -276,12 +310,14 @@ def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
         return root.getValue()
     bf: int = len(root.getChildren())
     k: int = 0
-    val: float = - math.inf
+    val = - math.inf
     while alpha < beta and k < bf:
         val = max(val, - __negAlphaBeta(root.getChild(k), -beta, -alpha))
         alpha = max(alpha, val)
         k += 1
+    root.setValue(val)
     return val
+
 
 """
     alphaBeta: return the alphaBeta value of the tree's root by applying alphaBeta algorithm
@@ -289,6 +325,8 @@ def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
     :param tree the tree on which the algorithm is applied
     :return: the heuristic value of the tree's root
 """
+
+
 def __alphabeta(root: Node, alpha: float, beta: float) -> float:
     bf: int = len(root.getChildren())
     if root.isLeaf():
@@ -316,10 +354,12 @@ def __alphabeta(root: Node, alpha: float, beta: float) -> float:
     :param tree the tree on which the algorithm is applied
     :return: the heuristic value of the tree's root
 """
+
+
 def __sss(root: Node) -> float:
-    k: int
+    k: int = 0
     G = Queue[(Node, NodeState, int)]()
-    G.put((root, NodeState.V, float('inf')))
+    G.put((root, NodeState.V, math.inf))
     while G.queue[0][1] is not NodeState.R and G.queue[0][0] is not root:
         tup = G.queue.popleft()
         if tup[1] == NodeState.V:
@@ -383,12 +423,15 @@ def __getUndiscoveredRightSibling(node: Node) -> Node | None:
             if currentNode.getValue() is float('inf') and isAtRightOfNode:
                 return currentNode
 
+
 """
    getColumnOfMatrix : return the wanted column of i index with first value of each row
    :param i, the index of the column:
    :param game, the game in which the column must be taken: 
    :return the column with first value of each row: 
 """
+
+
 def __getColumnOfMatrix(i: int, game: HexGame) -> list:
     if 0 > i or i > len(game.board.getCells()):
         raise ValueError
@@ -399,36 +442,42 @@ def __getColumnOfMatrix(i: int, game: HexGame) -> list:
 
     return column
 
+
 """
    hasGameEnded : return if the game is over
    :param i, the index of the column:
    :param game, the game in which the column must be taken: 
    :return the column with first value of each row: 
 """
+
+
 def __hasGameEnded(game: HexGame, cellsToTreat: list, goalCells: list, player: Status) -> bool:
     treatedCells = list()
     while cellsToTreat:
         cell = cellsToTreat.pop()
-        if cell in goalCells :
+        if cell in goalCells:
             return True
         neighbours = cell.getNeighbours()
         for neighbour in neighbours:
-            if (neighbour.getStatus() == player and not(neighbour in treatedCells)
-                    and not(neighbour in cellsToTreat)):
+            if (neighbour.getStatus() == player and not (neighbour in treatedCells)
+                    and not (neighbour in cellsToTreat)):
                 cellsToTreat.append(neighbour)
         treatedCells.append(cell)
     return False
+
 
 """
    initializeCellsNeighbour : set the neighbours of each cell according to the Hex Board
    :param game, the game containing hex board: 
 """
+
+
 def __initializeCellsNeighbour(game: HexGame):
     board = game.board
     boardSize = board.getSideLength()
     for x in range(boardSize):
         for y in range(boardSize):
-            cell = board.getCell(x,y)
+            cell = board.getCell(x, y)
             if x != 0:
                 # add top neighbour
                 cell.addNeighbour(board.getCell(x - 1, y))
@@ -449,6 +498,22 @@ def __initializeCellsNeighbour(game: HexGame):
             if y != boardSize - 1:
                 # add right neighbour
                 cell.addNeighbour(board.getCell(x, y + 1))
+
+
+"""
+    negamaxHeuristic: transforms the heuristic of the tree into a negamax
+    :param the root of the tree
+"""
+
+
+def __negamaxHeuristic(root: Node):
+    if root.isLeaf():
+        if root.getType() == NodeType.MIN:
+            root.setValue(- root.getValue())
+        return
+    else:
+        for child in root.getChildren():
+            return __negamaxHeuristic(child)
 
 
 class NodeState(Enum):
