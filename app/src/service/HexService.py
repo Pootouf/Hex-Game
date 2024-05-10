@@ -122,6 +122,9 @@ def applyNegAlphaBeta(tree: HeuristicTree):
 
 def playOneMove(cell: Cell, game: HexGame):
     cell.setStatus(Status.PLAYER)
+    winner = getWinner(game)
+    if winner is not Status.NONE:
+        return
     heuristictree = createHeuristicTree(game, game.difficultyLevel)
     match game.selectedAlgorithm:
         case AlgorithmSelection.MINIMAX:
