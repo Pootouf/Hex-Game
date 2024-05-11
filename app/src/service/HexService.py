@@ -1,11 +1,13 @@
 import math
-from queue import Queue
+from queue import PriorityQueue
 
 from src.entity.Board import Board
 from src.entity.Bot import Bot
 from src.entity.Cell import Cell
 from src.entity.HexGame import HexGame
 from src.entity.Player import Player
+from src.entity.priorityQueue.CustomFloat import CustomFloat
+from src.entity.priorityQueue.PrioritizedItem import PrioritizedItem
 from src.entity.Status import Status
 from src.entity.tree.HeuristicTree import HeuristicTree
 from src.entity.tree.Node import Node
@@ -143,10 +145,12 @@ def playOneMove(cell: Cell, game: HexGame):
     maxNode = None
     for child in heuristictree.root.getChildren():
         if game.selectedAlgorithm == AlgorithmSelection.ALPHABETA or game.selectedAlgorithm == AlgorithmSelection.NEGAMAX:
-            if maxNode is None or (hasattr(maxNode, "value") and -maxNode.getValue() < -child.getValue()):
+            if (maxNode is None or not (hasattr(maxNode, "value"))
+                    or (hasattr(child, "value") and -maxNode.getValue() < -child.getValue())):
                 maxNode = child
         else:
-            if maxNode is None or (hasattr(maxNode, "value") and maxNode.getValue() < child.getValue()):
+            if (maxNode is None or not (hasattr(maxNode, "value"))
+                    or (hasattr(child, "value") and maxNode.getValue() < child.getValue())):
                 maxNode = child
 
     game.board.getCell(maxNode.getSavedMoves()[0][0], maxNode.getSavedMoves()[0][1]).setStatus(Status.BOT)
@@ -372,46 +376,53 @@ def __alphabeta(root: Node, alpha: float, beta: float) -> float:
 
 
 def __sss(root: Node) -> float:
-    k: int = 0
-    G = Queue[(Node, NodeState, int)]()
-    G.put((root, NodeState.V, math.inf))
-    while G.queue[0][1] is not NodeState.R or G.queue[0][0] is not root:
-        tup = G.queue.popleft()
-        if tup[1] == NodeState.V:
-            if tup[0].isLeaf():
-                G.put((tup[0], NodeState.R, min(tup[2], tup[0].value)))
-                tup[0].setValue(min(tup[2], tup[0].value))
+    G = PriorityQueue[PrioritizedItem]()
+    G.put(PrioritizedItem(CustomFloat(math.inf), (root, NodeState.V)))
+    while G.queue[0].item[1] is not NodeState.R or G.queue[0].item[0] is not root:
+        tup = G.get()
+        state = tup.item[1]
+        currentNode = tup.item[0]
+        value = tup.priority
+
+
+        if state == NodeState.V:
+            if currentNode.isLeaf():
+                newValue = min(value.getValue(), float(currentNode.value))
+                G.put(PrioritizedItem(CustomFloat(newValue),
+                                      (currentNode, NodeState.R)))
+                currentNode.setValue(newValue)
             else:
-                if tup[0].getType() == NodeType.MAX:
-                    for i in range(1, len(tup[0].getChildren())):
-                        G.put((tup[0].getChild(i), NodeState.V, tup[2]))
-                        tup[0].getChild(i).setValue(tup[2])
+                if currentNode.getType() == NodeType.MAX:
+                    for i in range(1, len(currentNode.getChildren())):
+                        G.put(PrioritizedItem(value, (currentNode.getChild(i), NodeState.V)))
                 else:
-                    node = __getLeftmostUndiscoveredSucc(tup[0])
-                    G.put((node, NodeState.V, tup[2]))
+                    node = __getLeftmostUndiscoveredSucc(currentNode, G)
                     if node is not None:
-                        node.setValue(tup[2])
+                        G.put(PrioritizedItem(value, (node, NodeState.V )))
+                    else:
+                        print("Node not found")
 
         else:
-            if tup[0].getType() == NodeType.MIN:
-                G.put((tup[0].getParent(), NodeState.R, tup[2]))
-                tup[0].setValue(tup[2])
-                H = Queue[(Node, NodeState, int)]()
+            currentNode.setValue(value.getValue())
+            if currentNode.getType() == NodeType.MIN:
+                parent = currentNode.getParent()
+                G.put(PrioritizedItem(value, (parent, NodeState.R)))
+                parent.setValue(value.getValue())
+                H = PriorityQueue[(CustomFloat, (Node, NodeState))]()
                 for t in G.queue:
-                    if t[0].getParent() is not tup[0].getParent():
+                    if t.item[0].getParent() is not parent:
                         H.put(t)
                 G = H
             else:
-                sibling = __getUndiscoveredRightSibling(tup[0])
+                sibling = __getUndiscoveredRightSibling(currentNode, G)
                 if sibling is not None:
-                    G.put((sibling, NodeState.V, tup[2]))
-                    sibling.setValue(tup[2])
+                    G.put(PrioritizedItem(value, (sibling, NodeState.V)))
                 else:
-                    G.put((tup[0].getParent(), NodeState.R, tup[2]))
-                    tup[0].setValue(tup[2])
-    resolvedTup = G.queue.popleft()
-    root.setValue(resolvedTup[2])
-    return resolvedTup[2]
+                    G.put(PrioritizedItem(value, (currentNode.getParent(), NodeState.R)))
+                    currentNode.getParent().setValue(value.getValue())
+    resolvedTup = G.queue.pop(0)
+    root.setValue(int(resolvedTup.priority.getValue()))
+    return resolvedTup.priority.getValue()
 
 
 """
@@ -421,10 +432,13 @@ def __sss(root: Node) -> float:
 """
 
 
-def __getLeftmostUndiscoveredSucc(node: Node) -> Node | None:
-    for currentNode in node.getChildren():
-        if not hasattr(node, "value"):
-            return currentNode
+def __getLeftmostUndiscoveredSucc(node: Node, G: PriorityQueue) -> Node | None:
+    copiedQueue = G.queue
+    discoveredQueueElements = list(filter(lambda t: t.item[0].getParent() == node, copiedQueue))
+    discoveredNodes = list(map(lambda t: t.item[0], discoveredQueueElements))
+    for child in node.getChildren():
+        if child not in discoveredNodes:
+            return child
     return None
 
 
@@ -435,16 +449,20 @@ def __getLeftmostUndiscoveredSucc(node: Node) -> Node | None:
 """
 
 
-def __getUndiscoveredRightSibling(node: Node) -> Node | None:
+def __getUndiscoveredRightSibling(node: Node, G: PriorityQueue) -> Node | None:
     parent = node.getParent()
+    copiedQueue = G.queue
+    discoveredQueueElements = list(filter(lambda t: t.item[0].getParent() == parent, copiedQueue))
+    discoveredNodes = list(map(lambda t: t.item[0], discoveredQueueElements))
     isAtRightOfNode = False
     for currentNode in parent.getChildren():
         if currentNode is node:
             isAtRightOfNode = True
             continue
         else:
-            if not hasattr(node, "value") and isAtRightOfNode:
+            if currentNode not in discoveredNodes and isAtRightOfNode:
                 return currentNode
+    return None
 
 
 """
