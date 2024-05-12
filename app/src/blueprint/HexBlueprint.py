@@ -43,3 +43,7 @@ def playOnce(x: int, y: int):
 @hex_route.route('/hex/documentation/history')
 def displayHexHistory():
     return render_template('documentation/displayHistory.html.jinja')
+
+@hex_route.route('/hex/documentation/examples')
+def displayHexExamples():
+    return render_template('documentation/examples.html.jinja')

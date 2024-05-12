@@ -1,0 +1,138 @@
+{% extends 'index.html.jinja' %}
+
+{#
+    Display Hex games examples
+    param:
+    return : display the history of Hex game
+#}
+
+{% block content %}
+<div class="w-full h-full overflow-auto">
+    <h1 class="justify-center align-middle text-center text-5xl text-white font-bold">Hex Game</h1>
+
+    <div>
+        <h2 class="text-2xl text-amber-200 mt-[2%] ml-[10%]">Summary</h2>
+        <ul class="list-disc text-amber-100 ml-[15%] mt-[2%]">
+            <li>How to play Hex ?</li>
+            <li>Examples with Basic Heuristic</li>
+            <li>Examples with Two-Distance</li>
+        </ul>
+    </div>
+
+    <div class="mx-[10%] my-[5%] p-2 text-amber-50 bg-opacity-25 bg-black rounded-lg">
+        <h2 class="flex justify-center align-middle text-center text-2xl text-amber-200 mb-[2%]">
+            How to play Hex ?
+        </h2>
+
+        <p>
+            First thing to do when clicking on new game, is to define game parameters, like the board size, the difficulty
+            for the bot to compete with you, the heuristic for the bot to use and the algorithm to use.
+            The choice of the heuristics impacts how the bot will play, like you can see in the following sections.
+            When creating the game board, you'll have this view :
+        </p>
+
+        <div class="flex justify-center align-middle m-2">
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/example_empty_board.png') }}"
+                     alt="Example empty board">
+                <figcaption>Example of a Hex Game board when the game has been created</figcaption>
+            </figure>
+        </div>
+
+        Now, it's time to choose where to click to take a hexagon. The goal is, for the player,
+        to connect left and right sides with a continue line of hexagons.
+        The player plays in blue.
+
+
+        <div  class="flex justify-center align-middle m-2">
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/example_one_move.png') }}"
+                     alt="Example after one move on the board">
+                <figcaption>Example after one move on the board</figcaption>
+            </figure>
+        </div>
+
+        After the player has played one move, the bot play to block him accordingly to the chosen heuristic and algorithm.
+        After that, strategy begins and the best will win.
+    </div>
+
+    <div class="mx-[10%] my-[5%] p-2 text-amber-50 bg-opacity-25 bg-black rounded-lg">
+        <h2 class="flex justify-center align-middle text-center text-2xl text-amber-200 mb-[2%]">
+            Examples with Basic Heuristic
+        </h2>
+
+        <p>
+            On this application exists 2 types of heuristics : Basic Heuristic, a simple heuristic with approximation
+            created by us, and Two Distance, a specific heuristic recognized as the best at the moment for Hex.
+        </p>
+
+        <p>We will see now different examples of games with Basic Heuristic :</p>
+
+        <div  class="flex flex-col justify-center align-middle m-2">
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/basic/example_basic_1.png') }}"
+                     alt="Example 1 basic">
+                <figcaption>First example of basic heuristic on simple difficulty board 3 x 3</figcaption>
+            </figure>
+
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/basic/example_basic_2.png') }}"
+                     alt="Example 2 basic">
+                <figcaption>Second example of basic heuristic on medium difficulty board 5 x 5</figcaption>
+            </figure>
+
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/basic/example_basic_3.png') }}"
+                     alt="Example 3 basic">
+                <figcaption>Third example of basic heuristic on hard difficulty board 7 x 7</figcaption>
+            </figure>
+        </div>
+    </div>
+
+    <div class="mx-[10%] my-[5%] p-2 text-amber-50 bg-opacity-25 bg-black rounded-lg">
+        <h2 class="flex justify-center align-middle text-center text-2xl text-amber-200 mb-[2%]">
+            Examples with Two Distance
+        </h2>
+
+        <p>
+            Two Distance is used in Queenbee. In the regular graph distance metric,
+            the distance of a vertex v to the goal node t is one more than the minimum distance of v’s neighbours to t.
+            Measuring the distance this way amounts to computing the number of “free moves” needed
+            to complete the connection, ignoring the opponent’s endeavours to block these connections.
+            The two-distance looks instead at the second shortest distance of v’s neighbours to t,
+            the intuition being that the opponent can block the shortest one
+        </p>
+
+        <p>We will see now different examples of games with Two Distance :</p>
+
+        <div  class="flex flex-col justify-center align-middle m-2">
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/two_distance/example_two_distance_1.png') }}"
+                     alt="Example 1 two distance">
+                <figcaption>First example of Two Distance on simple difficulty board 3 x 3</figcaption>
+            </figure>
+
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/two_distance/example_two_distance_2.png') }}"
+                     alt="Example 2 two distance">
+                <figcaption>Second example of Two Distance on medium difficulty board 5 x 5</figcaption>
+            </figure>
+
+            <figure>
+                <img class="flex align-middle"
+                     src="{{ url_for('static', filename='/images/examples/two_distance/example_two_distance_3.png') }}"
+                     alt="Example 3 two distance">
+                <figcaption>Third example of Two Distance on hard difficulty board 7 x 7</figcaption>
+            </figure>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
