@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, session, request, redirect
 import jsonpickle
 
-from src.entity.Cell import Cell
-from src.entity.Status import Status
 from src.service.HexService import *
+from src.service.WinnerVerification import *
 
 hex_route = Blueprint('hex_route', __name__, template_folder='templates')
 
@@ -15,7 +14,10 @@ def show():
 @hex_route.route('/hex/game')
 def showGame():
     game = jsonpickle.decode(session['game'])
-    winner = getWinner(game)
+    winner = getWinner(game.board)
+    if winner is not Status.NONE:
+        game.setWinner(winner)
+        game.setIsGameFinished(True)
     return render_template('game/gameBoard.html.jinja', game=game, winner=winner.value)
 
 @hex_route.route('/hex/game/create/game/parameters')

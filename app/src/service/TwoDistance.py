@@ -2,11 +2,18 @@ import math
 from heapq import heappop, heappush
 
 from src.entity.Board import Board
+from src.entity.HexGame import HexGame
 from src.entity.Status import Status
 from src.service.BasicHeuristic import calculateHeuristicValueForBoard
+from src.service.WinnerVerification import getWinner
 
 
 def calculateHeuristicValueWithTwoDistance(board: Board) -> int:
+    # verify if one player has win
+    winner = getWinner(board)
+    match winner:
+        case Status.BOT: return 999
+        case Status.PLAYER: return -999
     # find the player that's closer to winning
     p1_dist = __twoDistanceValueForPlayer(board, Status.PLAYER)
     p2_dist = __twoDistanceValueForPlayer(board, Status.BOT)

@@ -16,6 +16,7 @@ from src.entity.HeuristicSelection import *
 from src.entity.AlgorithmSelection import *
 from src.service.BasicHeuristic import calculateHeuristicValueForBoard
 from src.service.TwoDistance import calculateHeuristicValueWithTwoDistance
+from src.service.WinnerVerification import getWinner
 
 """
     createGame: create an Hex game
@@ -126,8 +127,10 @@ def playOneMove(cell: Cell, game: HexGame):
     if cell.getStatus() != Status.NONE or game.winner != Status.NONE:
         return
     cell.setStatus(Status.PLAYER)
-    winner = getWinner(game)
+    winner = getWinner(game.board)
     if winner is not Status.NONE:
+        game.setWinner(winner)
+        game.setIsGameFinished(True)
         return
     heuristictree = createHeuristicTree(game, game.difficultyLevel)
     match game.selectedAlgorithm:
@@ -154,7 +157,11 @@ def playOneMove(cell: Cell, game: HexGame):
                 maxNode = child
 
     game.board.getCell(maxNode.getSavedMoves()[0][0], maxNode.getSavedMoves()[0][1]).setStatus(Status.BOT)
-    getWinner(game)
+    getWinner(game.board)
+    if winner is not Status.NONE:
+        game.setWinner(winner)
+        game.setIsGameFinished(True)
+        return
 
 
 """
@@ -168,38 +175,6 @@ def applySSS(tree: HeuristicTree):
     root = tree.getRoot()
     __sss(root)
 
-
-"""
-    getWinner: return the value of the winner of the game
-    :param game, the current game of Hex:
-    :return the winner of the game:
-"""
-
-
-def getWinner(game: HexGame) -> Status:
-    # Evaluate if the game is ended by the player
-    startColumn = __getColumnOfMatrix(0, game)
-    startColumn = list(filter(lambda cell: cell.getStatus() == Status.PLAYER, startColumn))
-    endColumn = __getColumnOfMatrix(game.board.getSideLength() - 1, game)
-    hasGameEndedByPlayer = __hasGameEnded(game, startColumn, endColumn, Status.PLAYER)
-
-    if hasGameEndedByPlayer:
-        game.setWinner(Status.PLAYER)
-
-    # Evaluate if the game is ended by the bot
-    startLine = game.board.getCells()[0].copy()
-    startLine = list(filter(lambda cell: cell.getStatus() == Status.BOT, startLine))
-    endLine = game.board.getCells()[game.board.getSideLength() - 1].copy()
-    hasGameEndedByBot = __hasGameEnded(game, startLine, endLine, Status.BOT)
-
-    if hasGameEndedByBot:
-        game.setWinner(Status.BOT)
-
-    if hasGameEndedByPlayer or hasGameEndedByBot:
-        game.setIsGameFinished(True)
-        return game.getWinner()
-
-    return Status.NONE
 
 
 def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, activePlayer: Status):
@@ -464,47 +439,6 @@ def __getUndiscoveredRightSibling(node: Node, G: PriorityQueue) -> Node | None:
                 return currentNode
     return None
 
-
-"""
-   getColumnOfMatrix : return the wanted column of i index with first value of each row
-   :param i, the index of the column:
-   :param game, the game in which the column must be taken: 
-   :return the column with first value of each row: 
-"""
-
-
-def __getColumnOfMatrix(i: int, game: HexGame) -> list:
-    if 0 > i or i > len(game.board.getCells()):
-        raise ValueError
-
-    column = list()
-    for row in game.board.getCells():
-        column.append(row[i])
-
-    return column
-
-
-"""
-   hasGameEnded : return if the game is over
-   :param i, the index of the column:
-   :param game, the game in which the column must be taken: 
-   :return the column with first value of each row: 
-"""
-
-
-def __hasGameEnded(game: HexGame, cellsToTreat: list, goalCells: list, player: Status) -> bool:
-    treatedCells = list()
-    while cellsToTreat:
-        cell = cellsToTreat.pop()
-        if cell in goalCells:
-            return True
-        neighbours = cell.getNeighbours()
-        for neighbour in neighbours:
-            if (neighbour.getStatus() == player and not (neighbour in treatedCells)
-                    and not (neighbour in cellsToTreat)):
-                cellsToTreat.append(neighbour)
-        treatedCells.append(cell)
-    return False
 
 
 """
