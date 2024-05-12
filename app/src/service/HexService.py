@@ -1,3 +1,4 @@
+import time
 import math
 from queue import PriorityQueue
 
@@ -133,6 +134,7 @@ def playOneMove(cell: Cell, game: HexGame):
         game.setIsGameFinished(True)
         return
     heuristictree = createHeuristicTree(game, game.difficultyLevel)
+    start = time.time()
     match game.selectedAlgorithm:
         case AlgorithmSelection.MINIMAX:
             applyMinimax(heuristictree)
@@ -144,7 +146,9 @@ def playOneMove(cell: Cell, game: HexGame):
             applyNegAlphaBeta(heuristictree)
         case AlgorithmSelection.SSS:
             applySSS(heuristictree)
-
+    end = time.time()
+    elapsed_time = (end - start) * 1000
+    game.last_time_played = elapsed_time
     maxNode = None
     for child in heuristictree.root.getChildren():
         if game.selectedAlgorithm == AlgorithmSelection.NEGALPHABETA or game.selectedAlgorithm == AlgorithmSelection.NEGAMAX:

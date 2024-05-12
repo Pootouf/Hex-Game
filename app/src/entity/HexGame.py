@@ -6,16 +6,17 @@ from src.entity.Status import Status
 
 
 class HexGame(object):
-    isGameFinished:bool
-    difficultyLevel:int
-    selectedHeuristic:HeuristicSelection
-    selectedAlgorithm:AlgorithmSelection
-    player:Player
-    board:Board
-    bot:Bot
-    winner:Status = Status.NONE
+    isGameFinished: bool
+    difficultyLevel: int
+    selectedHeuristic: HeuristicSelection
+    selectedAlgorithm: AlgorithmSelection
+    player: Player
+    board: Board
+    bot: Bot
+    winner: Status = Status.NONE
+    last_time_played: int
 
-    def __init__(self, difficultyLevel:int, player:Player, board:Board, bot: Bot,
+    def __init__(self, difficultyLevel: int, player: Player, board: Board, bot: Bot,
                  selectedHeuristic: HeuristicSelection, selectedAlgorithm: AlgorithmSelection):
         self.difficultyLevel = difficultyLevel
         self.player = player
@@ -25,6 +26,7 @@ class HexGame(object):
         self.selectedHeuristic = selectedHeuristic
         self.selectedAlgorithm = selectedAlgorithm
         self.winner = Status.NONE
+        self.last_time_played = 0
 
     def isGameFinished(self) -> bool:
         return self.isGameFinished
