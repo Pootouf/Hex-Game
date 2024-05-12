@@ -1,0 +1,58 @@
+{% extends 'index.html.jinja' %}
+
+{#
+    Display information about us
+    param:
+    return : display information about us
+#}
+
+{% block content %}
+<div class="w-full h-full overflow-auto">
+    <h1 class="justify-center align-middle text-center text-5xl text-white font-bold">Hex Game</h1>
+
+    <div>
+        <h2 class="text-2xl text-amber-200 mt-[2%] ml-[10%]">About us</h2>
+        <ul class="list-disc text-amber-100 ml-[15%] mt-[2%]">
+            <li>Tech Quack</li>
+            <li>How to contact us ?</li>
+        </ul>
+    </div>
+
+    <div class="mx-[10%] my-[5%] p-2 text-amber-50 bg-opacity-25 bg-black rounded-lg">
+        <h2 class="flex justify-center align-middle text-center text-2xl text-amber-200 mb-[2%]">TechQuack</h2>
+
+        <img class="float-start m-2 h-1/4 w-1/4"
+                     src="{{ url_for('static', filename='/images/quack.png') }}"
+                     alt="TechQuack logo">
+
+        <p>TechQuack is an organization of 5 students that creates various type of application and websites.</p>
+
+        <br>
+
+        <p>
+            Its goal is to have fun while working and have a nice atmosphere around them.
+            For this project, 4 students were working together : Florian Van Liedekerke, Etienne Binginot, Erwann Montagne, Axelle Mazuy.
+        </p>
+
+        <br>
+
+        <p>The fifth member is working on another project at the moment.</p>
+
+        <p>
+            This organization is new in the industry, with a background of less than a year.
+            But at the moment, it has already a few projects realized, like this platform, and a dating site in development.
+        </p>
+
+        <br>
+        <p>The students are welcoming new partners as there structure grow, so keep an eye on them and follow there future work !</p>
+        <br>
+    </div>
+
+    <div class="mx-[10%] my-[5%] p-2 text-amber-50 bg-opacity-25 bg-black rounded-lg">
+        <h2 class="flex justify-center align-middle text-center text-2xl text-amber-200 mb-[2%]">How to contact us ?</h2>
+        <ul class="list-disc text-amber-100 ml-[15%] mt-[2%]">
+            <li>E-mail : techquack1@gmail.com</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

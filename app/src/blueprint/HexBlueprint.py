@@ -49,3 +49,7 @@ def displayHexHistory():
 @hex_route.route('/hex/documentation/examples')
 def displayHexExamples():
     return render_template('documentation/examples.html.jinja')
+
+@hex_route.route('/hex/documentation/about/us')
+def displayInfoAboutUs():
+    return render_template('documentation/aboutUs.html.jinja')
