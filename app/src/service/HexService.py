@@ -144,7 +144,7 @@ def playOneMove(cell: Cell, game: HexGame):
 
     maxNode = None
     for child in heuristictree.root.getChildren():
-        if game.selectedAlgorithm == AlgorithmSelection.ALPHABETA or game.selectedAlgorithm == AlgorithmSelection.NEGAMAX:
+        if game.selectedAlgorithm == AlgorithmSelection.NEGALPHABETA or game.selectedAlgorithm == AlgorithmSelection.NEGAMAX:
             if (maxNode is None or not (hasattr(maxNode, "value"))
                     or (hasattr(child, "value") and -maxNode.getValue() < -child.getValue())):
                 maxNode = child
@@ -547,14 +547,14 @@ def __initializeCellsNeighbour(game: HexGame):
 """
 
 
-def __negamaxHeuristic(root: Node):
+def __negamaxHeuristic(root: Node, deepLevel: int = 1):
     if root.isLeaf():
-        if root.getType() == NodeType.MIN:
+        if deepLevel % 2 == 0:
             root.setValue(- root.getValue())
         return
     else:
         for child in root.getChildren():
-            __negamaxHeuristic(child)
+            __negamaxHeuristic(child, deepLevel + 1)
 
 
 class NodeState(Enum):
