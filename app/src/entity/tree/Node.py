@@ -1,5 +1,6 @@
 from typing import List
 
+from src.entity.HexGame import HexGame
 from src.entity.tree import NodeType
 from typing_extensions import Self
 
@@ -12,6 +13,8 @@ class Node(object):
     parent: Self
 
     savedMoves: list
+
+    game: HexGame
 
     def __init__(self):
         self.children = []
@@ -41,6 +44,9 @@ class Node(object):
     def getValue(self) -> int:
         return self.value
 
+    def getGame(self) -> HexGame:
+        return self.game
+
     def addChild(self, child: Self):
         self.children.append(child)
         child.parent = self
@@ -56,3 +62,6 @@ class Node(object):
 
     def setSavedMoves(self, savedMoves: list):
         self.savedMoves = savedMoves
+
+    def setGame(self, game: HexGame):
+        self.game = game

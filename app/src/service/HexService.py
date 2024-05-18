@@ -61,6 +61,7 @@ def createGame(boardSize: int, difficultyLevel: int, heuristicChoice: int, algor
 def createHeuristicTree(game: HexGame, height: int) -> HeuristicTree:
     node = Node()
     node.setType(NodeType.MAX)
+    node.setGame(game)
     __addChildNodes(node, game, list(), height, Status.BOT)
 
     heuristicTree = HeuristicTree(node)
@@ -183,7 +184,6 @@ def applySSS(tree: HeuristicTree):
 
 def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, activePlayer: Status):
     if height == 0:
-        __createLeafNode(root, game, savedMoves)
         return
 
     board = game.board
@@ -198,24 +198,11 @@ def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, ac
             else:
                 node.setType(NodeType.MIN)
             root.addChild(node)
+            node.setGame(game)
             newMoves = savedMoves.copy()
             newMoves.append((i, j, activePlayer))
             node.setSavedMoves(newMoves)
             __addChildNodes(node, game, newMoves, height - 1, __getActivePlayer(activePlayer))
-            if node.isLeaf():
-                __createLeafNode(node, game, newMoves)
-
-
-def __createLeafNode(node: Node, game: HexGame, savedMoves: list):
-    newBoard = __copyBoard(game.board)
-    for (x, y, status) in savedMoves:
-        newBoard.getCell(x, y).setStatus(status)
-
-    match game.selectedHeuristic:
-        case HeuristicSelection.BASIC:
-            node.setValue(calculateHeuristicValueForBoard(newBoard))
-        case HeuristicSelection.TWO_DISTANCE:
-            node.setValue(calculateHeuristicValueWithTwoDistance(newBoard))
 
 
 """
@@ -263,7 +250,7 @@ def __copyBoard(currentBoard: Board) -> Board:
 def __minimax(root: Node) -> float:
     bf: int = len(root.getChildren())
     if root.isLeaf():
-        return root.getValue()
+        return __getValueFromNode(root, root.getGame())
     if root.getType() == NodeType.MAX:
         val = - math.inf
         for k in range(bf):
@@ -287,7 +274,7 @@ def __minimax(root: Node) -> float:
 def __negamax(root: Node) -> float:
     bf: int = len(root.getChildren())
     if root.isLeaf():
-        return root.getValue()
+        return __getValueFromNode(root, root.getGame())
     val = - math.inf
     for k in range(bf):
         val = max(val, - __negamax(root.getChild(k)))
@@ -305,7 +292,7 @@ def __negamax(root: Node) -> float:
 
 def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
     if root.isLeaf():
-        return root.getValue()
+        return __getValueFromNode(root, root.getGame())
     bf: int = len(root.getChildren())
     k: int = 0
     val = - math.inf
@@ -328,7 +315,7 @@ def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
 def __alphabeta(root: Node, alpha: float, beta: float) -> float:
     bf: int = len(root.getChildren())
     if root.isLeaf():
-        return root.getValue()
+        return __getValueFromNode(root, root.getGame())
     else:
         if root.getType() == NodeType.MAX:
             k: int = 0
@@ -366,7 +353,7 @@ def __sss(root: Node) -> float:
 
         if state == NodeState.V:
             if currentNode.isLeaf():
-                newValue = min(value.getValue(), float(currentNode.value))
+                newValue = min(value.getValue(), float(__getValueFromNode(currentNode, currentNode.getGame())))
                 G.put(PrioritizedItem(CustomFloat(newValue),
                                       (currentNode, NodeState.R)))
                 currentNode.setValue(newValue)
@@ -481,7 +468,7 @@ def __initializeCellsNeighbour(game: HexGame):
 
 """
     negamaxHeuristic: transforms the heuristic of the tree into a negamax
-    :param the root of the tree
+    :param the root of the tree:
 """
 
 
@@ -494,6 +481,23 @@ def __negamaxHeuristic(root: Node, deepLevel: int = 1):
         for child in root.getChildren():
             __negamaxHeuristic(child, deepLevel + 1)
 
+"""
+    getValueFromNode: return the value of the node depending on the heuristic
+    :param node, the node whose value is wanted:
+    :param game, the game being played:
+"""
+def __getValueFromNode(node: Node, game: HexGame) -> int:
+    if node.isLeaf():
+        if not hasattr(node, "value"):
+            newBoard = __copyBoard(game.board)
+            for (x, y, status) in node.getSavedMoves():
+                newBoard.getCell(x, y).setStatus(status)
+            match game.selectedHeuristic:
+                case HeuristicSelection.BASIC:
+                    node.setValue(calculateHeuristicValueForBoard(newBoard))
+                case HeuristicSelection.TWO_DISTANCE:
+                    node.setValue(calculateHeuristicValueWithTwoDistance(newBoard))
+    return node.getValue()
 
 class NodeState(Enum):
     V = 0,
