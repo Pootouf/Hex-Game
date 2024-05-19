@@ -475,7 +475,7 @@ def __initializeCellsNeighbour(game: HexGame):
 def __negamaxHeuristic(root: Node, deepLevel: int = 1):
     if root.isLeaf():
         if deepLevel % 2 == 0:
-            root.setValue(- root.getValue())
+            root.setValue(- __getValueFromNode(root, root.game))
         return
     else:
         for child in root.getChildren():
