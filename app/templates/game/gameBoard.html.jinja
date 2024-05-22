@@ -35,8 +35,12 @@
 <div class="bg-white bg-opacity-25 text-black text-center flex flex-col align-left justify-center">
     {% print("Last bot time played : {}ms".format("%.3f" % game.last_time_played)) %}
 </div>
-<div class="bg-white bg-opacity-25 text-black text-center flex flex-col align-left justify-center">
-    {% print("Last bot removed nodes : {}".format(game.removed_nodes_count)) %}
+<div class="bg-red-600 bg-opacity-25 text-gray-500">
+    {% for removed_nodes in game.removed_nodes_count %}
+        <div>
+            {% print("Last bot removed nodes : {}".format(removed_nodes)) %}
+        </div>
+    {% endfor %}
 </div>
 <div class="w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-25">
 <hr class="h-1 w-[20vw] my-8 border-0 {{ botBackground }}">

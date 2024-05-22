@@ -139,19 +139,19 @@ def playOneMove(cell: Cell, game: HexGame):
     match game.selectedAlgorithm:
         case AlgorithmSelection.MINIMAX:
             applyMinimax(heuristictree)
-            game.removed_nodes_count = 0
+            game.addRemoveNodesCount(0)
         case AlgorithmSelection.NEGAMAX:
             applyNegamax(heuristictree)
-            game.removed_nodes_count = 0
+            game.addRemoveNodesCount(0)
         case AlgorithmSelection.ALPHABETA:
             applyAlphaBeta(heuristictree)
-            game.removed_nodes_count = __computeHeuristicTreeUnvisitedNodes(heuristictree.root)
+            game.addRemoveNodesCount(__computeHeuristicTreeUnvisitedNodes(heuristictree.root))
         case AlgorithmSelection.NEGALPHABETA:
             applyNegAlphaBeta(heuristictree)
-            game.removed_nodes_count = __computeHeuristicTreeUnvisitedNodes(heuristictree.root)
+            game.addRemoveNodesCount(__computeHeuristicTreeUnvisitedNodes(heuristictree.root))
         case AlgorithmSelection.SSS:
             applySSS(heuristictree)
-            game.removed_nodes_count = __computeHeuristicTreeUnvisitedNodes(heuristictree.root)
+            game.addRemoveNodesCount(__computeHeuristicTreeUnvisitedNodes(heuristictree.root))
     end = time.time()
     elapsed_time = (end - start) * 1000
     game.last_time_played = elapsed_time
@@ -311,7 +311,7 @@ def __negamax(root: Node) -> float:
 
 
 def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
-    root.setValue(True)
+    root.setVisited(True)
     if root.isLeaf():
         return root.getValue()
     bf: int = len(root.getChildren())
@@ -335,7 +335,7 @@ def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
 
 def __alphabeta(root: Node, alpha: float, beta: float) -> float:
     bf: int = len(root.getChildren())
-    root.setValue(True)
+    root.setVisited(True)
     if root.isLeaf():
         return root.getValue()
     else:
@@ -505,10 +505,8 @@ def __negamaxHeuristic(root: Node, deepLevel: int = 1):
             __negamaxHeuristic(child, deepLevel + 1)
 
 def __computeHeuristicTreeUnvisitedNodes(node: Node):
-    if node.isLeaf():
-        return 1
     count = 0
-    if node.isVisited():
+    if not node.isVisited():
         count += 1
     for child in node.getChildren():
         count += __computeHeuristicTreeUnvisitedNodes(child)
