@@ -13,15 +13,21 @@ class Node(object):
 
     savedMoves: list
 
+    visited: bool
+
     def __init__(self):
         self.children = []
         self.parent = None
+        self.visited = False
 
     def getNodeNumber(self) -> int:
         return len(self.children)
 
     def getSavedMoves(self) -> list:
         return self.savedMoves
+
+    def isVisited(self) -> bool:
+        return self.visited
 
     def isLeaf(self) -> bool:
         return len(self.children) == 0
@@ -56,3 +62,6 @@ class Node(object):
 
     def setSavedMoves(self, savedMoves: list):
         self.savedMoves = savedMoves
+
+    def setVisited(self, visited: bool):
+        self.visited = visited

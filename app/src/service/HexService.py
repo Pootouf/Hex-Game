@@ -64,6 +64,7 @@ def createHeuristicTree(game: HexGame, height: int) -> HeuristicTree:
     __addChildNodes(node, game, list(), height, Status.BOT)
 
     heuristicTree = HeuristicTree(node)
+    heuristicTree.node_count = __computeHeuristicTreeUnvisitedNodes(node)
     return heuristicTree
 
 
@@ -138,17 +139,23 @@ def playOneMove(cell: Cell, game: HexGame):
     match game.selectedAlgorithm:
         case AlgorithmSelection.MINIMAX:
             applyMinimax(heuristictree)
+            game.removed_nodes_count = 0
         case AlgorithmSelection.NEGAMAX:
             applyNegamax(heuristictree)
+            game.removed_nodes_count = 0
         case AlgorithmSelection.ALPHABETA:
             applyAlphaBeta(heuristictree)
+            game.removed_nodes_count = __computeHeuristicTreeUnvisitedNodes(heuristictree.root)
         case AlgorithmSelection.NEGALPHABETA:
             applyNegAlphaBeta(heuristictree)
+            game.removed_nodes_count = __computeHeuristicTreeUnvisitedNodes(heuristictree.root)
         case AlgorithmSelection.SSS:
             applySSS(heuristictree)
+            game.removed_nodes_count = __computeHeuristicTreeUnvisitedNodes(heuristictree.root)
     end = time.time()
     elapsed_time = (end - start) * 1000
     game.last_time_played = elapsed_time
+    __resetVisitedNode(heuristictree.getRoot())
     maxNode = None
     for child in heuristictree.root.getChildren():
         if game.selectedAlgorithm == AlgorithmSelection.NEGALPHABETA or game.selectedAlgorithm == AlgorithmSelection.NEGAMAX:
@@ -304,6 +311,7 @@ def __negamax(root: Node) -> float:
 
 
 def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
+    root.setValue(True)
     if root.isLeaf():
         return root.getValue()
     bf: int = len(root.getChildren())
@@ -327,6 +335,7 @@ def __negAlphaBeta(root: Node, alpha: float, beta: float) -> float:
 
 def __alphabeta(root: Node, alpha: float, beta: float) -> float:
     bf: int = len(root.getChildren())
+    root.setValue(True)
     if root.isLeaf():
         return root.getValue()
     else:
@@ -365,6 +374,7 @@ def __sss(root: Node) -> float:
 
 
         if state == NodeState.V:
+            currentNode.setVisited(True)
             if currentNode.isLeaf():
                 newValue = min(value.getValue(), float(currentNode.value))
                 G.put(PrioritizedItem(CustomFloat(newValue),
@@ -377,7 +387,7 @@ def __sss(root: Node) -> float:
                 else:
                     node = __getLeftmostUndiscoveredSucc(currentNode, G)
                     if node is not None:
-                        G.put(PrioritizedItem(value, (node, NodeState.V )))
+                        G.put(PrioritizedItem(value, (node, NodeState.V)))
                     else:
                         print("Node not found")
 
@@ -494,6 +504,21 @@ def __negamaxHeuristic(root: Node, deepLevel: int = 1):
         for child in root.getChildren():
             __negamaxHeuristic(child, deepLevel + 1)
 
+def __computeHeuristicTreeUnvisitedNodes(node: Node):
+    if node.isLeaf():
+        return 1
+    count = 0
+    if node.isVisited():
+        count += 1
+    for child in node.getChildren():
+        count += __computeHeuristicTreeUnvisitedNodes(child)
+    return count
+
+
+def __resetVisitedNode(root: Node):
+    root.setVisited(False)
+    for child in root.getChildren():
+        __resetVisitedNode(child)
 
 class NodeState(Enum):
     V = 0,
