@@ -15,6 +15,7 @@ class HexGame(object):
     bot: Bot
     winner: Status = Status.NONE
     last_time_played: int
+    removed_nodes_count: list
 
     def __init__(self, difficultyLevel: int, player: Player, board: Board, bot: Bot,
                  selectedHeuristic: HeuristicSelection, selectedAlgorithm: AlgorithmSelection):
@@ -27,6 +28,7 @@ class HexGame(object):
         self.selectedAlgorithm = selectedAlgorithm
         self.winner = Status.NONE
         self.last_time_played = 0
+        self.removed_nodes_count = []
 
     def isGameFinished(self) -> bool:
         return self.isGameFinished
@@ -57,3 +59,6 @@ class HexGame(object):
 
     def setWinner(self, winner: Status):
         self.winner = winner
+
+    def addRemoveNodesCount(self, removed_nodes_count: int):
+        self.removed_nodes_count.append(removed_nodes_count)
