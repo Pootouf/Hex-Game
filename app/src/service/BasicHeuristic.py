@@ -1,7 +1,11 @@
 from src.entity.Board import Board
 from src.entity.Status import Status
 
-
+"""
+    calculateHeuristicValueForBoard: calculate the value of each node to make the shortest path
+    :param board, the board from which calculate:
+    :return the heuristic value:
+"""
 def calculateHeuristicValueForBoard(board: Board) -> int:
     cells = board.getCells()
 

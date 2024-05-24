@@ -7,7 +7,11 @@ from src.entity.Status import Status
 from src.service.BasicHeuristic import calculateHeuristicValueForBoard
 from src.service.WinnerVerification import getWinner
 
-
+"""
+    calculateHeuristicValueWithTwoDistance: calculate the value of each node to choose the second best move
+    :param board, the board from which calculate:
+    :return the heuristic value:
+"""
 def calculateHeuristicValueWithTwoDistance(board: Board) -> int:
     # verify if one player has win
     winner = getWinner(board)

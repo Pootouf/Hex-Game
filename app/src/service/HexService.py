@@ -188,7 +188,15 @@ def applySSS(tree: HeuristicTree):
     __sss(root)
 
 
-
+"""
+    addChildNodes: creates recursively the nodes of the heuristic tree
+    :param root, the root of the heuristic tree:
+    :param game, the HexGame instance:
+    :param savedMoves, contains the registered moves to reach this node:
+    :param height, the height of the tree:
+    :param activePlayer, the status of the current player;
+    :return: the heuristic value of the tree's root:
+"""
 def __addChildNodes(root: Node, game: HexGame, savedMoves: list, height: int, activePlayer: Status):
     if height == 0:
         return
